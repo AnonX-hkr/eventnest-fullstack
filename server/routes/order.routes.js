@@ -6,6 +6,8 @@ const {
   createOrder,
   getMyOrders,
   getOrganizerStats,
+  refundOrder,
+  exportAttendees,
 } = require("../controllers/order.controller");
 
 const createOrderRules = [
@@ -25,5 +27,11 @@ router.get("/my", protect, getMyOrders);
 
 // GET /api/orders/organizer-stats
 router.get("/organizer-stats", protect, requireRole("organizer", "admin"), getOrganizerStats);
+
+// GET /api/orders/events/:eventId/attendees/export  — CSV download
+router.get("/events/:eventId/attendees/export", protect, requireRole("organizer", "admin"), exportAttendees);
+
+// POST /api/orders/:id/refund  — organizer issues refund
+router.post("/:id/refund", protect, requireRole("organizer", "admin"), refundOrder);
 
 module.exports = router;

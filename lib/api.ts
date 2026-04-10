@@ -49,7 +49,7 @@ export interface ApiUser {
   id: string;
   name: string;
   email: string;
-  role: "attendee" | "organizer" | "admin";
+  role: "attendee" | "organizer" | "staff" | "admin";
   avatar: string | null;
   bio: string;
   isVerified: boolean;
@@ -459,4 +459,108 @@ export const ticketApi = {
         checkedInAt: string;
       };
     }>("/tickets/validate", { method: "POST", body: JSON.stringify(body) }, token),
+
+  resend: (ticketId: string, token: string) =>
+    request(`/tickets/${ticketId}/resend`, { method: "POST" }, token),
+};
+
+// ─── Promo code endpoints ─────────────────────────────────────────────────────
+
+export interface ApiPromoCode {
+  _id: string;
+  code: string;
+  event: { _id: string; title: string } | null;
+  discountType: "percent" | "fixed";
+  discountValue: number;
+  usageLimit: number | null;
+  usedCount: number;
+  expiresAt: string | null;
+  isActive: boolean;
+  isValid: boolean;
+  createdAt: string;
+}
+
+export const promoCodeApi = {
+  validate: (body: { code: string; eventId?: string; subtotal: number }, token: string) =>
+    request<{
+      valid: boolean;
+      promoCodeId: string;
+      code: string;
+      discountType: "percent" | "fixed";
+      discountValue: number;
+      discountAmount: number;
+    }>("/promo-codes/validate", { method: "POST", body: JSON.stringify(body) }, token),
+
+  list: (token: string) =>
+    request<{ promoCodes: ApiPromoCode[] }>("/promo-codes", {}, token),
+
+  create: (
+    body: {
+      code: string;
+      eventId?: string;
+      discountType: "percent" | "fixed";
+      discountValue: number;
+      usageLimit?: number;
+      expiresAt?: string;
+    },
+    token: string
+  ) => request<{ promoCode: ApiPromoCode }>("/promo-codes", { method: "POST", body: JSON.stringify(body) }, token),
+
+  update: (id: string, body: Partial<ApiPromoCode>, token: string) =>
+    request<{ promoCode: ApiPromoCode }>(`/promo-codes/${id}`, { method: "PATCH", body: JSON.stringify(body) }, token),
+
+  delete: (id: string, token: string) =>
+    request(`/promo-codes/${id}`, { method: "DELETE" }, token),
+};
+
+// ─── Order action endpoints ────────────────────────────────────────────────────
+
+export const orderActionsApi = {
+  refund: (orderId: string, reason: string, token: string) =>
+    request<{ orderNumber: string; refundAmount: number }>(
+      `/orders/${orderId}/refund`,
+      { method: "POST", body: JSON.stringify({ reason }) },
+      token
+    ),
+
+  exportAttendeesUrl: (eventId: string) =>
+    `${API_BASE}/orders/events/${eventId}/attendees/export`,
+};
+
+// ─── Admin endpoints ──────────────────────────────────────────────────────────
+
+export interface AdminStats {
+  totalUsers: number;
+  organizers: number;
+  totalEvents: number;
+  publishedEvents: number;
+  totalOrders: number;
+  totalRevenue: number;
+}
+
+export const adminApi = {
+  stats: (token: string) =>
+    request<AdminStats>("/admin/stats", {}, token),
+
+  users: (params: { page?: number; limit?: number; search?: string; role?: string } = {}, token: string) => {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined) qs.set(k, String(v)); });
+    return request<{
+      users: (ApiUser & { _id: string; isActive: boolean; lastLoginAt: string | null; createdAt: string })[];
+      pagination: PaginationMeta;
+    }>(`/admin/users${qs.toString() ? `?${qs}` : ""}`, {}, token);
+  },
+
+  updateUser: (id: string, body: { role?: string; isActive?: boolean }, token: string) =>
+    request<{ user: ApiUser }>(`/admin/users/${id}`, { method: "PATCH", body: JSON.stringify(body) }, token),
+
+  events: (params: { page?: number; status?: string } = {}, token: string) => {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined) qs.set(k, String(v)); });
+    return request<{ events: ApiEvent[]; pagination: PaginationMeta }>(
+      `/admin/events${qs.toString() ? `?${qs}` : ""}`,
+      {},
+      token
+    );
+  },
 };

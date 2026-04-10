@@ -3,7 +3,9 @@ const QRCode = require("qrcode");
 const Order = require("../models/Order");
 const Ticket = require("../models/Ticket");
 const Event = require("../models/Event");
+const PromoCode = require("../models/PromoCode");
 const { sendTicketEmail } = require("../utils/email");
+const { getStripe } = require("../utils/stripe");
 const {
   sendSuccess,
   sendCreated,
@@ -20,7 +22,7 @@ const createOrder = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return sendValidationError(res, errors.array());
 
-    const { eventId, lines, billingInfo } = req.body;
+    const { eventId, lines, billingInfo, promoCode: promoCodeStr } = req.body;
 
     // ── Fetch & validate event ────────────────────────────────────────────────
     const event = await Event.findById(eventId);
@@ -62,9 +64,25 @@ const createOrder = async (req, res, next) => {
       });
     }
 
+    // ── Apply promo code if provided ──────────────────────────────────────────
+    let discountAmount = 0;
+    let appliedPromoCode = null;
+    if (promoCodeStr) {
+      const promo = await PromoCode.findOne({
+        code: promoCodeStr.trim().toUpperCase(),
+        $or: [{ event: eventId }, { event: null }],
+      });
+      if (promo && promo.isValid) {
+        discountAmount = promo.calculateDiscount(subtotal);
+        appliedPromoCode = promo.code;
+        promo.usedCount += 1;
+        await promo.save();
+      }
+    }
+
     const serviceFeeRate = 0.08;
     const serviceFee = Math.round(subtotal * serviceFeeRate * 100) / 100;
-    const total = Math.round((subtotal + serviceFee) * 100) / 100;
+    const total = Math.max(0, Math.round((subtotal + serviceFee - discountAmount) * 100) / 100);
 
     // ── Create order ─────────────────────────────────────────────────────────
     const order = await Order.create({
@@ -75,6 +93,8 @@ const createOrder = async (req, res, next) => {
       serviceFee,
       serviceFeeRate,
       total,
+      promoCode: appliedPromoCode,
+      discountAmount,
       billingInfo,
       status: "confirmed",
       confirmedAt: new Date(),
@@ -315,4 +335,111 @@ const getOrganizerStats = async (req, res, next) => {
   }
 };
 
-module.exports = { createOrder, getMyOrders, getOrganizerStats };
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/orders/:id/refund  — organizer issues a refund
+// ─────────────────────────────────────────────────────────────────────────────
+const refundOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id).populate("event", "organizer title");
+    if (!order) return sendNotFound(res, "Order");
+
+    // Only the event organizer or admin can refund
+    const isOwner = order.event.organizer?.toString() === req.user._id.toString();
+    if (!isOwner && req.user.role !== "admin") {
+      return sendError(res, "You are not authorized to refund this order.", 403);
+    }
+
+    if (order.status !== "confirmed") {
+      return sendError(res, `Cannot refund an order with status "${order.status}".`, 400);
+    }
+
+    const { reason } = req.body;
+
+    // ── Stripe refund ─────────────────────────────────────────────────────────
+    const stripe = getStripe();
+    if (stripe && order.stripePaymentIntentId) {
+      try {
+        await stripe.refunds.create({
+          payment_intent: order.stripePaymentIntentId,
+          reason: "requested_by_customer",
+        });
+      } catch (stripeErr) {
+        return sendError(res, `Stripe refund failed: ${stripeErr.message}`, 502);
+      }
+    }
+
+    // ── Update order + tickets ────────────────────────────────────────────────
+    order.status = "refunded";
+    order.refundedAt = new Date();
+    order.refundAmount = order.total;
+    order.refundReason = reason || "";
+    await order.save();
+
+    // Mark all tickets as cancelled
+    await Ticket.updateMany(
+      { order: order._id },
+      { status: "cancelled" }
+    );
+
+    return sendSuccess(res, { orderNumber: order.orderNumber, refundAmount: order.total }, "Refund issued successfully.");
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/orders/events/:eventId/attendees/export  — CSV download (organizer)
+// ─────────────────────────────────────────────────────────────────────────────
+const exportAttendees = async (req, res, next) => {
+  try {
+    const { eventId } = req.params;
+
+    const event = await Event.findOne({ _id: eventId, organizer: req.user._id });
+    if (!event && req.user.role !== "admin") {
+      return sendNotFound(res, "Event");
+    }
+
+    const orders = await Order.find({ event: eventId, status: "confirmed" })
+      .populate("buyer", "name email")
+      .sort({ createdAt: -1 });
+
+    const tickets = await Ticket.find({
+      event: eventId,
+      status: { $in: ["valid", "used"] },
+    }).sort({ createdAt: 1 });
+
+    // Build CSV
+    const rows = [
+      ["Ticket Code", "Attendee Name", "Attendee Email", "Attendee Phone", "Tier", "Price", "Status", "Order Number", "Checked In At", "Booked At"],
+    ];
+
+    for (const ticket of tickets) {
+      const order = orders.find((o) => o._id.toString() === ticket.order?.toString());
+      rows.push([
+        ticket.ticketCode,
+        ticket.attendeeInfo?.name || "",
+        ticket.attendeeInfo?.email || "",
+        ticket.attendeeInfo?.phone || "",
+        ticket.tierSnapshot?.name || "",
+        ticket.tierSnapshot?.price != null ? ticket.tierSnapshot.price.toFixed(2) : "0.00",
+        ticket.status,
+        order?.orderNumber || "",
+        ticket.checkedInAt ? ticket.checkedInAt.toISOString() : "",
+        ticket.createdAt ? ticket.createdAt.toISOString() : "",
+      ]);
+    }
+
+    const csv = rows
+      .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const filename = `attendees-${event?.slug || eventId}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    return res.send(csv);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { createOrder, getMyOrders, getOrganizerStats, refundOrder, exportAttendees };

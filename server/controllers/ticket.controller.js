@@ -1,4 +1,7 @@
 const Ticket = require("../models/Ticket");
+const Order = require("../models/Order");
+const Event = require("../models/Event");
+const { sendTicketEmail } = require("../utils/email");
 const {
   sendSuccess,
   sendError,
@@ -56,11 +59,11 @@ const validateTicket = async (req, res, next) => {
 
     if (!ticket) return sendNotFound(res, "Ticket");
 
-    // Only the event organizer or admin can validate
-    const isOrganizer =
-      ticket.event.organizer?.toString() === req.user._id.toString();
+    // Event organizer, assigned staff, or admin can validate
+    const isOwner = ticket.event.organizer?.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
-    if (!isOrganizer && !isAdmin) {
+    const isStaff = req.user.role === "staff";
+    if (!isOwner && !isAdmin && !isStaff) {
       return sendError(res, "You are not authorized to validate tickets for this event.", 403);
     }
 
@@ -103,4 +106,44 @@ const validateTicket = async (req, res, next) => {
   }
 };
 
-module.exports = { getMyTickets, validateTicket };
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/tickets/:id/resend  — resend ticket email to attendee
+// ─────────────────────────────────────────────────────────────────────────────
+const resendTicket = async (req, res, next) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id)
+      .populate("event", "title startDate venue coverImage")
+      .populate("order", "orderNumber total subtotal serviceFee confirmedAt");
+
+    if (!ticket) return sendNotFound(res, "Ticket");
+
+    // Only the ticket owner can resend
+    if (ticket.attendee.toString() !== req.user._id.toString()) {
+      return sendError(res, "You can only resend your own tickets.", 403);
+    }
+
+    if (ticket.status === "cancelled") {
+      return sendError(res, "Cannot resend a cancelled ticket.", 400);
+    }
+
+    await sendTicketEmail({
+      to: ticket.attendeeInfo.email,
+      order: {
+        orderNumber: ticket.order?.orderNumber || "N/A",
+        total: ticket.order?.total || 0,
+        subtotal: ticket.order?.subtotal || 0,
+        serviceFee: ticket.order?.serviceFee || 0,
+        confirmedAt: ticket.order?.confirmedAt || ticket.createdAt,
+      },
+      tickets: [ticket],
+      event: ticket.event,
+      buyerName: ticket.attendeeInfo.name,
+    });
+
+    return sendSuccess(res, null, "Ticket email resent successfully.");
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { getMyTickets, validateTicket, resendTicket };

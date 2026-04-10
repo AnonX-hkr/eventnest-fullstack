@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   DollarSign, Ticket, CalendarCheck, Users,
   TrendingUp, ArrowUpRight, Eye, QrCode, Plus,
+  Tag, Download, Trash2, ToggleLeft, ToggleRight, Loader2, X,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { orderApi, OrganizerStats } from "@/lib/api";
+import {
+  orderApi, promoCodeApi, eventApi, orderActionsApi,
+  OrganizerStats, ApiPromoCode, ApiEvent, extractError,
+} from "@/lib/api";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { StaggeredList, staggerCardChild, staggerChild, FadeIn } from "@/components/animations";
 
@@ -173,6 +177,18 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<OrganizerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Promo codes
+  const [promoCodes, setPromoCodes] = useState<ApiPromoCode[]>([]);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+  const [promoForm, setPromoForm] = useState({ code: "", discountType: "percent" as "percent" | "fixed", discountValue: "", usageLimit: "", expiresAt: "" });
+  const [promoFormError, setPromoFormError] = useState("");
+  const [promoSaving, setPromoSaving] = useState(false);
+
+  // My events (for CSV export)
+  const [myEvents, setMyEvents] = useState<ApiEvent[]>([]);
+  const [exportingEvent, setExportingEvent] = useState<string | null>(null);
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.replace("/login?redirect=/dashboard");
     if (!authLoading && isAuthenticated && user?.role === "attendee") router.replace("/tickets");
@@ -185,6 +201,88 @@ export default function DashboardPage() {
       setLoading(false);
     });
   }, [accessToken, user]);
+
+  const fetchPromoCodes = useCallback(async () => {
+    if (!accessToken) return;
+    setPromoLoading(true);
+    const res = await promoCodeApi.list(accessToken);
+    setPromoLoading(false);
+    if (res.success && res.data) setPromoCodes(res.data.promoCodes);
+  }, [accessToken]);
+
+  const fetchMyEvents = useCallback(async () => {
+    if (!accessToken) return;
+    const res = await eventApi.myEvents({}, accessToken);
+    if (res.success && res.data) setMyEvents(res.data.events);
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (accessToken && user && user.role !== "attendee") {
+      fetchPromoCodes();
+      fetchMyEvents();
+    }
+  }, [accessToken, user, fetchPromoCodes, fetchMyEvents]);
+
+  async function handleCreatePromo(e: React.FormEvent) {
+    e.preventDefault();
+    if (!promoForm.code.trim() || !promoForm.discountValue) {
+      setPromoFormError("Code and discount value are required.");
+      return;
+    }
+    if (!accessToken) return;
+    setPromoSaving(true);
+    setPromoFormError("");
+    const res = await promoCodeApi.create({
+      code: promoForm.code.trim(),
+      discountType: promoForm.discountType,
+      discountValue: parseFloat(promoForm.discountValue),
+      usageLimit: promoForm.usageLimit ? parseInt(promoForm.usageLimit) : undefined,
+      expiresAt: promoForm.expiresAt || undefined,
+    }, accessToken);
+    setPromoSaving(false);
+    if (res.success) {
+      setShowPromoForm(false);
+      setPromoForm({ code: "", discountType: "percent", discountValue: "", usageLimit: "", expiresAt: "" });
+      fetchPromoCodes();
+    } else {
+      setPromoFormError(extractError(res));
+    }
+  }
+
+  async function handleTogglePromo(promo: ApiPromoCode) {
+    if (!accessToken) return;
+    await promoCodeApi.update(promo._id, { isActive: !promo.isActive }, accessToken);
+    fetchPromoCodes();
+  }
+
+  async function handleDeletePromo(id: string) {
+    if (!accessToken) return;
+    await promoCodeApi.delete(id, accessToken);
+    fetchPromoCodes();
+  }
+
+  async function handleExportCSV(eventId: string) {
+    if (!accessToken) return;
+    setExportingEvent(eventId);
+    // Open download URL with token in Authorization header via fetch + blob
+    try {
+      const url = orderActionsApi.exportAttendeesUrl(eventId);
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `attendees-${eventId}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      // silent fail — user sees nothing happens if export fails
+    }
+    setExportingEvent(null);
+  }
 
   if (authLoading || loading) return <DashboardSkeleton />;
 
@@ -339,6 +437,186 @@ export default function DashboardPage() {
           </div>
         </FadeIn>
       </div>
+
+      {/* ── Promo Codes ───────────────────────────────────────────────────── */}
+      <FadeIn delay={0.35} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
+          <h2 className="text-white font-bold text-sm flex items-center gap-2">
+            <Tag className="w-4 h-4 text-[#00d26a]" />
+            Promo Codes
+          </h2>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setShowPromoForm((v) => !v)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00d26a]/10 border border-[#00d26a]/20 text-[#00d26a] text-xs font-semibold hover:bg-[#00d26a]/20 transition-all"
+          >
+            {showPromoForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+            {showPromoForm ? "Cancel" : "New Code"}
+          </motion.button>
+        </div>
+
+        {/* Create form */}
+        <AnimatePresence>
+          {showPromoForm && (
+            <motion.form
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onSubmit={handleCreatePromo}
+              className="overflow-hidden"
+            >
+              <div className="p-6 border-b border-white/8 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-white/50 text-xs mb-1 block">Code *</label>
+                  <input
+                    value={promoForm.code}
+                    onChange={(e) => setPromoForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
+                    placeholder="SUMMER25"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#00d26a]/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs mb-1 block">Type</label>
+                  <select
+                    value={promoForm.discountType}
+                    onChange={(e) => setPromoForm((f) => ({ ...f, discountType: e.target.value as "percent" | "fixed" }))}
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                  >
+                    <option value="percent">% Off</option>
+                    <option value="fixed">$ Fixed</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs mb-1 block">
+                    Value {promoForm.discountType === "percent" ? "(%)" : "($)"} *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max={promoForm.discountType === "percent" ? 100 : undefined}
+                    step="0.01"
+                    value={promoForm.discountValue}
+                    onChange={(e) => setPromoForm((f) => ({ ...f, discountValue: e.target.value }))}
+                    placeholder={promoForm.discountType === "percent" ? "25" : "10"}
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs mb-1 block">Usage Limit</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={promoForm.usageLimit}
+                    onChange={(e) => setPromoForm((f) => ({ ...f, usageLimit: e.target.value }))}
+                    placeholder="Unlimited"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs mb-1 block">Expires At</label>
+                  <input
+                    type="date"
+                    value={promoForm.expiresAt}
+                    onChange={(e) => setPromoForm((f) => ({ ...f, expiresAt: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    disabled={promoSaving}
+                    className="w-full py-2 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+                  >
+                    {promoSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                    Create
+                  </button>
+                </div>
+              </div>
+              {promoFormError && (
+                <p className="px-6 py-2 text-red-400 text-xs bg-red-500/5">{promoFormError}</p>
+              )}
+            </motion.form>
+          )}
+        </AnimatePresence>
+
+        {/* Promo code list */}
+        {promoLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-5 h-5 text-white/30 animate-spin" />
+          </div>
+        ) : promoCodes.length === 0 ? (
+          <div className="px-6 py-8 text-center text-white/30 text-sm">
+            No promo codes yet. Create one to offer discounts.
+          </div>
+        ) : (
+          <div className="divide-y divide-white/5">
+            {promoCodes.map((promo) => (
+              <div key={promo._id} className="px-6 py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-mono font-bold text-white text-sm">{promo.code}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#00d26a]/10 text-[#00d26a] text-xs border border-[#00d26a]/20">
+                    {promo.discountType === "percent" ? `${promo.discountValue}%` : `$${promo.discountValue}`} off
+                  </span>
+                  <span className="text-white/30 text-xs">
+                    {promo.usedCount}/{promo.usageLimit ?? "∞"} used
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => handleTogglePromo(promo)}
+                    className={`transition-colors ${promo.isActive ? "text-[#00d26a]" : "text-white/30"} hover:opacity-70`}
+                    title={promo.isActive ? "Deactivate" : "Activate"}
+                  >
+                    {promo.isActive ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                  </button>
+                  <button
+                    onClick={() => handleDeletePromo(promo._id)}
+                    className="text-white/20 hover:text-red-400 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </FadeIn>
+
+      {/* ── My Events + CSV Export ────────────────────────────────────────── */}
+      {myEvents.length > 0 && (
+        <FadeIn delay={0.36} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-white/8">
+            <h2 className="text-white font-bold text-sm flex items-center gap-2">
+              <Download className="w-4 h-4 text-[#00d26a]" />
+              Export Attendees
+            </h2>
+            <p className="text-white/30 text-xs mt-0.5">Download CSV for any of your events</p>
+          </div>
+          <div className="divide-y divide-white/5">
+            {myEvents.slice(0, 5).map((ev) => (
+              <div key={ev._id} className="px-6 py-3 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-white text-sm font-medium truncate">{ev.title}</p>
+                  <p className="text-white/30 text-xs capitalize">{ev.status} · {ev.totalSold ?? 0} sold</p>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleExportCSV(ev._id)}
+                  disabled={exportingEvent === ev._id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/6 border border-white/10 text-white/60 hover:text-white text-xs font-medium transition-all disabled:opacity-40 flex-shrink-0"
+                >
+                  {exportingEvent === ev._id
+                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                    : <Download className="w-3 h-3" />}
+                  CSV
+                </motion.button>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+      )}
 
       {/* ── Recent orders ─────────────────────────────────────────────────── */}
       <FadeIn delay={0.38} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden">

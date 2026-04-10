@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ticket, Menu, X, Plus, LogOut, User, QrCode } from "lucide-react";
+import { Ticket, Menu, X, Plus, LogOut, User, QrCode, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -112,18 +112,27 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-4 py-2.5 text-white/65 text-sm hover:text-white hover:bg-white/5 transition-colors">
                       <Ticket className="w-4 h-4" /> My Tickets
                     </Link>
-                    {(user?.role === "organizer" || user?.role === "admin") && (
+                    {(user?.role === "organizer" || user?.role === "staff" || user?.role === "admin") && (
                       <>
-                        <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
-                          style={{ transform: "none", display: "flex" }}
-                          className="flex items-center gap-2 px-4 py-2.5 text-white/65 text-sm hover:text-white hover:bg-white/5 transition-colors">
-                          <User className="w-4 h-4" /> Dashboard
-                        </Link>
+                        {(user?.role === "organizer" || user?.role === "admin") && (
+                          <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
+                            style={{ transform: "none", display: "flex" }}
+                            className="flex items-center gap-2 px-4 py-2.5 text-white/65 text-sm hover:text-white hover:bg-white/5 transition-colors">
+                            <User className="w-4 h-4" /> Dashboard
+                          </Link>
+                        )}
                         <Link href="/scan" onClick={() => setUserMenuOpen(false)}
                           style={{ transform: "none", display: "flex" }}
                           className="flex items-center gap-2 px-4 py-2.5 text-white/65 text-sm hover:text-white hover:bg-white/5 transition-colors">
                           <QrCode className="w-4 h-4" /> Scan Tickets
                         </Link>
+                        {user?.role === "admin" && (
+                          <Link href="/admin" onClick={() => setUserMenuOpen(false)}
+                            style={{ transform: "none", display: "flex" }}
+                            className="flex items-center gap-2 px-4 py-2.5 text-purple-400/80 text-sm hover:text-purple-400 hover:bg-purple-500/5 transition-colors">
+                            <ShieldCheck className="w-4 h-4" /> Admin Panel
+                          </Link>
+                        )}
                       </>
                     )}
                     <button onClick={() => { logout(); setUserMenuOpen(false); toast.success("Signed out"); }}

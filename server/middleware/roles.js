@@ -56,12 +56,14 @@ const requireOwnerOrAdmin = (req, res, next, resourceUserId) => {
  */
 const isOrganizer = requireRole("organizer", "admin");
 const isAdmin = requireRole("admin");
-const isAnyRole = requireRole("attendee", "organizer", "admin");
+const isStaffOrAbove = requireRole("organizer", "staff", "admin");
+const isAnyRole = requireRole("attendee", "organizer", "staff", "admin");
 
 module.exports = {
   requireRole,
   requireOwnerOrAdmin,
   isOrganizer,
   isAdmin,
+  isStaffOrAbove,
   isAnyRole,
 };

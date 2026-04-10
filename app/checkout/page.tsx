@@ -5,12 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle, Ticket, ArrowLeft, Lock, User, Mail, Phone,
-  Loader2, AlertCircle, QrCode, CreditCard, Zap,
+  CheckCircle, ArrowLeft, Lock, User,
+  Loader2, AlertCircle, QrCode, CreditCard, Zap, Tag, X, Check,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
-  eventApi, orderApi, paymentApi, extractError,
+  eventApi, orderApi, paymentApi, promoCodeApi, extractError,
   ApiEvent, ApiTicket,
 } from "@/lib/api";
 
@@ -31,6 +31,17 @@ function CheckoutForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [globalError, setGlobalError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Promo code
+  const [promoInput, setPromoInput] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoResult, setPromoResult] = useState<{
+    code: string;
+    discountAmount: number;
+    discountType: "percent" | "fixed";
+    discountValue: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState("");
 
   // Success state (direct/free orders only — Stripe goes to /checkout/success)
   const [confirmedOrder, setConfirmedOrder] = useState<{
@@ -70,7 +81,8 @@ function CheckoutForm() {
   const unitPrice = selectedTier?.price ?? 0;
   const subtotal = unitPrice * qty;
   const fee = Math.round(subtotal * 0.08 * 100) / 100;
-  const total = subtotal + fee;
+  const discount = promoResult?.discountAmount ?? 0;
+  const total = Math.max(0, Math.round((subtotal + fee - discount) * 100) / 100);
 
   // Use Stripe when key is configured AND tickets are not free
   const useStripe = Boolean(STRIPE_KEY) && total > 0;
@@ -94,11 +106,12 @@ function CheckoutForm() {
 
     const lines = [{ tierId: selectedTier._id, quantity: qty }];
     const billingInfo = { name: form.name, email: form.email, phone: form.phone };
+    const promoCode = promoResult?.code;
 
     // ── Stripe path ──────────────────────────────────────────────────────────
     if (useStripe) {
       const res = await paymentApi.createSession(
-        { eventId, lines, billingInfo },
+        { eventId, lines, billingInfo, ...(promoCode ? { promoCode } : {}) } as Parameters<typeof paymentApi.createSession>[0],
         accessToken
       );
       setLoading(false);
@@ -112,7 +125,7 @@ function CheckoutForm() {
     }
 
     // ── Direct/free path ─────────────────────────────────────────────────────
-    const res = await orderApi.create({ eventId, lines, billingInfo }, accessToken);
+    const res = await orderApi.create({ eventId, lines, billingInfo, ...(promoCode ? { promoCode } : {}) } as Parameters<typeof orderApi.create>[0], accessToken);
     setLoading(false);
 
     if (!res.success || !res.data) {
@@ -302,6 +315,82 @@ function CheckoutForm() {
             ))}
           </motion.div>
 
+          {/* Promo Code section */}
+          {subtotal > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.08 }}
+              className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6"
+            >
+              <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Tag className="w-4 h-4 text-[#00d26a]" />
+                Promo Code
+              </h2>
+
+              {promoResult ? (
+                <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#00d26a]/8 border border-[#00d26a]/25">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-[#00d26a]" />
+                    <span className="text-[#00d26a] font-mono font-bold text-sm">{promoResult.code}</span>
+                    <span className="text-white/50 text-xs">
+                      — {promoResult.discountType === "percent"
+                        ? `${promoResult.discountValue}% off`
+                        : `$${promoResult.discountValue} off`}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setPromoResult(null); setPromoInput(""); setPromoError(""); }}
+                    className="text-white/40 hover:text-white/70 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(""); }}
+                    placeholder="Enter promo code"
+                    className={`flex-1 px-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm font-mono focus:outline-none transition-all ${
+                      promoError ? "border-red-500/50" : "border-white/10 focus:border-[#00d26a]/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    disabled={!promoInput.trim() || promoLoading}
+                    onClick={async () => {
+                      if (!promoInput.trim() || !accessToken) return;
+                      setPromoLoading(true);
+                      setPromoError("");
+                      const res = await promoCodeApi.validate(
+                        { code: promoInput.trim(), eventId, subtotal },
+                        accessToken
+                      );
+                      setPromoLoading(false);
+                      if (res.success && res.data) {
+                        setPromoResult({
+                          code: res.data.code,
+                          discountAmount: res.data.discountAmount,
+                          discountType: res.data.discountType,
+                          discountValue: res.data.discountValue,
+                        });
+                      } else {
+                        setPromoError(extractError(res));
+                      }
+                    }}
+                    className="px-5 py-3 rounded-xl bg-[#00d26a]/15 border border-[#00d26a]/25 text-[#00d26a] font-semibold text-sm hover:bg-[#00d26a]/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                  >
+                    {promoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
+                  </button>
+                </div>
+              )}
+              {promoError && <p className="text-red-400 text-xs mt-2">{promoError}</p>}
+            </motion.div>
+          )}
+
           {/* Payment section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -401,7 +490,7 @@ function CheckoutForm() {
               </div>
 
               <div className="space-y-2 text-sm">
-                {total > 0 ? (
+                {subtotal > 0 ? (
                   <>
                     <div className="flex justify-between">
                       <span className="text-white/50">${unitPrice.toFixed(2)} × {qty}</span>
@@ -411,6 +500,15 @@ function CheckoutForm() {
                       <span className="text-white/50">Service fee (8%)</span>
                       <span className="text-white">${fee.toFixed(2)}</span>
                     </div>
+                    {promoResult && (
+                      <div className="flex justify-between text-[#00d26a]">
+                        <span className="flex items-center gap-1">
+                          <Tag className="w-3 h-3" />
+                          {promoResult.code}
+                        </span>
+                        <span>−${promoResult.discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
                   </>
                 ) : null}
                 <div className="flex justify-between font-bold border-t border-white/8 pt-2.5 mt-1">

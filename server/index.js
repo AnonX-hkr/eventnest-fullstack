@@ -23,6 +23,8 @@ const eventRoutes = require("./routes/event.routes");
 const orderRoutes = require("./routes/order.routes");
 const ticketRoutes = require("./routes/ticket.routes");
 const paymentRoutes = require("./routes/payment.routes");
+const promoCodeRoutes = require("./routes/promoCode.routes");
+const adminRoutes = require("./routes/admin.routes");
 const { handleWebhook } = require("./controllers/payment.controller");
 
 // ─── App init ────────────────────────────────────────────────────────────────
@@ -97,6 +99,8 @@ app.use("/api/events", eventRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/promo-codes", promoCodeRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ─── 404 + Global error handler ───────────────────────────────────────────────
 app.use(notFound);
