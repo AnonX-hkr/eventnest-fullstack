@@ -59,6 +59,27 @@ h1, h2, h3, h4, h5 {
   animation: shimmer 1.8s infinite linear;
 }
 
+/* ─── Gradient border utility ─── */
+.gradient-border {
+  background: linear-gradient(#0d1f2d, #0d1f2d) padding-box,
+              linear-gradient(135deg, rgba(0,210,106,0.4) 0%, rgba(0,210,106,0.05) 100%) border-box;
+  border: 1px solid transparent;
+}
+
+/* ─── Glow text ─── */
+.text-glow-green {
+  text-shadow: 0 0 20px rgba(0, 210, 106, 0.4);
+}
+
+/* ─── Premium card hover ─── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 /* ─── Scrollbars ─── */
 ::-webkit-scrollbar {
   width: 6px;

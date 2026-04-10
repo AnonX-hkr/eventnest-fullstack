@@ -287,7 +287,7 @@ export default function ExplorePage() {
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
-            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} index={i} />)}
           </motion.div>
         )}
 

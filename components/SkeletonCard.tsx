@@ -1,6 +1,15 @@
-export default function SkeletonCard() {
+"use client";
+
+import { motion } from "framer-motion";
+
+export default function SkeletonCard({ index = 0 }: { index?: number }) {
   return (
-    <div className="rounded-2xl overflow-hidden bg-[#0d1f2d] border border-white/6">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="rounded-2xl overflow-hidden bg-[#0d1f2d] border border-white/6"
+    >
       {/* Image placeholder */}
       <div className="h-48 relative skeleton-shimmer">
         <div className="absolute top-3 left-3 w-11 h-12 rounded-xl bg-white/6" />
@@ -14,7 +23,6 @@ export default function SkeletonCard() {
         <div className="space-y-2">
           <div className="h-4 rounded-md skeleton-shimmer w-full" />
           <div className="h-4 rounded-md skeleton-shimmer w-3/4" />
-          {/* min-height spacer to match real card */}
           <div className="h-px" />
         </div>
 
@@ -36,6 +44,6 @@ export default function SkeletonCard() {
           <div className="h-3 rounded skeleton-shimmer w-16" />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
