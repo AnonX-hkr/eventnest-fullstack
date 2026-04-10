@@ -49,7 +49,7 @@ router.get("/my", protect, isOrganizer, getMyEvents);
  *
  * @access Private — Organizer / Admin
  */
-router.post("/", protect, isOrganizer, createEventRules, createEvent);
+router.post("/", protect, isOrganizer, ...createEventRules, createEvent);
 
 /**
  * @route  GET /api/events/:id
@@ -63,20 +63,20 @@ router.get("/:id", optionalAuth, getEvent);
  * @desc   Update a draft or published event
  * @access Private — Organizer (own events) / Admin
  */
-router.patch("/:id", protect, isOrganizer, eventIdParamRule, updateEvent);
+router.patch("/:id", protect, isOrganizer, ...eventIdParamRule, updateEvent);
 
 /**
  * @route  PATCH /api/events/:id/publish
  * @desc   Publish a draft event
  * @access Private — Organizer (own events) / Admin
  */
-router.patch("/:id/publish", protect, isOrganizer, publishEventRules, publishEvent);
+router.patch("/:id/publish", protect, isOrganizer, ...publishEventRules, publishEvent);
 
 /**
  * @route  DELETE /api/events/:id
  * @desc   Soft-delete an event (sets deletedAt, marks as cancelled)
  * @access Private — Organizer (own events) / Admin
  */
-router.delete("/:id", protect, isOrganizer, eventIdParamRule, deleteEvent);
+router.delete("/:id", protect, isOrganizer, ...eventIdParamRule, deleteEvent);
 
 module.exports = router;

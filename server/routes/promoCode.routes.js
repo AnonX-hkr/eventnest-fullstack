@@ -9,22 +9,13 @@ const {
   validatePromoCode,
 } = require("../controllers/promoCode.controller");
 
-// POST /api/promo-codes/validate  — public (called from checkout, auth optional)
+// POST /api/promo-codes/validate — requires auth (any role)
 router.post("/validate", protect, validatePromoCode);
 
-// All other routes require organizer role
-router.use(protect, isOrganizer);
-
-// POST /api/promo-codes
-router.post("/", createPromoCode);
-
-// GET /api/promo-codes
-router.get("/", listPromoCodes);
-
-// PATCH /api/promo-codes/:id
-router.patch("/:id", updatePromoCode);
-
-// DELETE /api/promo-codes/:id
-router.delete("/:id", deletePromoCode);
+// Organizer-only routes — protect + isOrganizer on each
+router.post("/", protect, isOrganizer, createPromoCode);
+router.get("/", protect, isOrganizer, listPromoCodes);
+router.patch("/:id", protect, isOrganizer, updatePromoCode);
+router.delete("/:id", protect, isOrganizer, deletePromoCode);
 
 module.exports = router;

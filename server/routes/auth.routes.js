@@ -15,14 +15,14 @@ const {
  * @desc   Register a new user (attendee or organizer)
  * @access Public
  */
-router.post("/signup", signupRules, signup);
+router.post("/signup", ...signupRules, signup);
 
 /**
  * @route  POST /api/auth/login
  * @desc   Authenticate user, return access token + set refresh token cookie
  * @access Public
  */
-router.post("/login", loginRules, login);
+router.post("/login", ...loginRules, login);
 
 /**
  * @route  POST /api/auth/refresh

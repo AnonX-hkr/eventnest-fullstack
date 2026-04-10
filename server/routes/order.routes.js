@@ -20,7 +20,7 @@ const createOrderRules = [
 ];
 
 // POST /api/orders
-router.post("/", protect, requireRole("attendee", "admin"), createOrderRules, createOrder);
+router.post("/", protect, requireRole("attendee", "admin"), ...createOrderRules, createOrder);
 
 // GET /api/orders/my
 router.get("/my", protect, getMyOrders);
