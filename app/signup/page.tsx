@@ -10,26 +10,33 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
+import { ShakeError } from "@/components/animations";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type Role = "attendee" | "organizer";
 
 const ROLE_OPTIONS: { value: Role; label: string; desc: string; icon: typeof Users }[] = [
-  { value: "attendee", label: "Attendee", desc: "Discover and book events", icon: Users },
-  { value: "organizer", label: "Organizer", desc: "Create and sell tickets", icon: Calendar },
+  { value: "attendee",  label: "Attendee",  desc: "Discover and book events", icon: Users    },
+  { value: "organizer", label: "Organizer", desc: "Create and sell tickets",  icon: Calendar },
 ];
 
+// ─── Password strength ────────────────────────────────────────────────────────
+
 function getStrength(pw: string): { level: number; label: string; color: string } {
-  if (pw.length === 0) return { level: 0, label: "", color: "" };
+  if (!pw.length) return { level: 0, label: "", color: "" };
   let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return { level: score, label: "Weak", color: "bg-red-500" };
-  if (score === 2) return { level: score, label: "Fair", color: "bg-amber-400" };
-  if (score === 3) return { level: score, label: "Good", color: "bg-blue-400" };
-  return { level: score, label: "Strong", color: "bg-[#00d26a]" };
+  if (pw.length >= 8)            score++;
+  if (/[A-Z]/.test(pw))         score++;
+  if (/[0-9]/.test(pw))         score++;
+  if (/[^A-Za-z0-9]/.test(pw))  score++;
+  if (score <= 1) return { level: score, label: "Weak",   color: "bg-red-500"   };
+  if (score === 2) return { level: score, label: "Fair",   color: "bg-amber-400" };
+  if (score === 3) return { level: score, label: "Good",   color: "bg-blue-400"  };
+  return              { level: score, label: "Strong", color: "bg-[#00d26a]" };
 }
+
+// ─── Field error ──────────────────────────────────────────────────────────────
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
@@ -45,22 +52,21 @@ function FieldError({ msg }: { msg?: string }) {
   );
 }
 
+// ─── Form ─────────────────────────────────────────────────────────────────────
+
 function SignupForm() {
-  const router = useRouter();
-  const params = useSearchParams();
+  const router   = useRouter();
+  const params   = useSearchParams();
   const redirect = params.get("redirect") ?? "/";
   const { signup, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "attendee" as Role,
-  });
-  const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [form, setForm]           = useState({ name: "", email: "", password: "", role: "attendee" as Role });
+  const [showPw, setShowPw]       = useState(false);
+  const [loading, setLoading]     = useState(false);
   const [globalError, setGlobalError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [shakeCount, setShakeCount]   = useState(0);
+  const [focused, setFocused]         = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) router.replace(redirect);
@@ -68,85 +74,83 @@ function SignupForm() {
 
   function setField(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
-    // Clear field error on change
-    if (fieldErrors[field]) {
-      setFieldErrors((e) => { const next = { ...e }; delete next[field]; return next; });
-    }
+    if (fieldErrors[field]) setFieldErrors((e) => { const n = { ...e }; delete n[field]; return n; });
     setGlobalError("");
   }
 
   const strength = getStrength(form.password);
 
   function validateClient(): Record<string, string> {
-    const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = "Full name is required.";
-    else if (form.name.trim().length < 2) errs.name = "Name must be at least 2 characters.";
-    if (!form.email.trim()) {
-      errs.email = "Email address is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = "Enter a valid email address.";
-    }
-    if (!form.password) {
-      errs.password = "Password is required.";
-    } else if (form.password.length < 8) {
-      errs.password = "Password must be at least 8 characters.";
-    } else if (!/[A-Z]/.test(form.password)) {
-      errs.password = "Password must contain at least one uppercase letter.";
-    } else if (!/[0-9]/.test(form.password)) {
-      errs.password = "Password must contain at least one number.";
-    }
-    return errs;
+    const e: Record<string, string> = {};
+    if (!form.name.trim())          e.name = "Full name is required.";
+    else if (form.name.trim().length < 2) e.name = "Name must be at least 2 characters.";
+    if (!form.email.trim())         e.email = "Email address is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email address.";
+    if (!form.password)             e.password = "Password is required.";
+    else if (form.password.length < 8) e.password = "Must be at least 8 characters.";
+    else if (!/[A-Z]/.test(form.password)) e.password = "Must contain an uppercase letter.";
+    else if (!/[0-9]/.test(form.password)) e.password = "Must contain a number.";
+    return e;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const clientErrs = validateClient();
-    if (Object.keys(clientErrs).length > 0) {
+    if (Object.keys(clientErrs).length) {
       setFieldErrors(clientErrs);
+      setShakeCount((n) => n + 1);
       return;
     }
-
     setLoading(true);
     setGlobalError("");
     setFieldErrors({});
-
     const result = await signup(form);
     setLoading(false);
-
     if (!result.ok) {
-      // Show field-level errors inline if backend returned them
-      if (result.fieldErrors && Object.keys(result.fieldErrors).length > 0) {
+      if (result.fieldErrors && Object.keys(result.fieldErrors).length) {
         setFieldErrors(result.fieldErrors);
-        // Also set a global fallback if there's a general error message
-        if (result.error && !Object.values(result.fieldErrors).includes(result.error)) {
-          setGlobalError(result.error);
-        }
+        if (result.error && !Object.values(result.fieldErrors).includes(result.error ?? ""))
+          setGlobalError(result.error ?? "");
       } else {
         setGlobalError(result.error ?? "Signup failed. Please try again.");
       }
+      setShakeCount((n) => n + 1);
       return;
     }
     toast.success("Account created! Welcome aboard.");
     router.push(redirect);
   }
 
+  // Shared input border/ring helper
+  function inputStyle(field: string) {
+    if (fieldErrors[field]) return "border-red-500/50 ring-1 ring-red-500/20";
+    if (focused === field)  return "border-[#00d26a]/50 ring-1 ring-[#00d26a]/12";
+    return "border-white/10";
+  }
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16 bg-[#060f17]">
+      {/* Background glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-[#00d26a]/6 blur-[100px] pointer-events-none" />
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
+        initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0,  filter: "blur(0px)" }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="rounded-3xl bg-[#0d1f2d] border border-white/8 overflow-hidden shadow-2xl shadow-black/40">
+        <div className="rounded-3xl bg-[#0d1f2d] border border-white/8 overflow-hidden shadow-2xl shadow-black/50">
+
           {/* Header */}
           <div className="px-8 pt-8 pb-6 border-b border-white/6">
             <Link href="/" className="flex items-center gap-2 w-fit mb-6">
-              <div className="w-8 h-8 rounded-lg bg-[#00d26a] flex items-center justify-center shadow-[0_0_14px_rgba(0,210,106,0.4)]">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: -5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="w-8 h-8 rounded-lg bg-[#00d26a] flex items-center justify-center shadow-[0_0_14px_rgba(0,210,106,0.4)]"
+              >
                 <Ticket className="w-5 h-5 text-[#0c2230]" />
-              </div>
+              </motion.div>
               <span className="text-white font-bold text-lg tracking-tight">
                 Event<span className="text-[#00d26a]">Bookings</span>
               </span>
@@ -158,69 +162,91 @@ function SignupForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-8 py-6 space-y-4">
-            {/* Global error */}
+
+            {/* Global error with shake */}
             <AnimatePresence>
               {globalError && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm"
-                >
-                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>{globalError}</span>
-                </motion.div>
+                <ShakeError shake={shakeCount}>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm"
+                  >
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{globalError}</span>
+                  </motion.div>
+                </ShakeError>
               )}
             </AnimatePresence>
 
             {/* Role selector */}
             <div>
-              <label className="text-white/55 text-xs font-medium mb-2 block">
-                I want to…
-              </label>
+              <label className="text-white/55 text-xs font-medium mb-2 block">I want to…</label>
               <div className="grid grid-cols-2 gap-2">
-                {ROLE_OPTIONS.map(({ value, label, desc, icon: Icon }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, role: value }))}
-                    style={{ transform: "none" }}
-                    className={`flex flex-col items-start gap-1 p-3.5 rounded-xl border text-left transition-all ${
-                      form.role === value
-                        ? "border-[#00d26a]/50 bg-[#00d26a]/10"
-                        : "border-white/8 bg-[#060f17] hover:border-white/20"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className={`w-4 h-4 ${form.role === value ? "text-[#00d26a]" : "text-white/40"}`} />
-                      <span className={`text-sm font-semibold ${form.role === value ? "text-[#00d26a]" : "text-white/70"}`}>
-                        {label}
-                      </span>
-                    </div>
-                    <span className="text-white/35 text-xs leading-tight">{desc}</span>
-                  </button>
-                ))}
+                {ROLE_OPTIONS.map(({ value, label, desc, icon: Icon }) => {
+                  const active = form.role === value;
+                  return (
+                    <motion.button
+                      key={value}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, role: value }))}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className={`flex flex-col items-start gap-1 p-3.5 rounded-xl border text-left transition-colors duration-200 ${
+                        active
+                          ? "border-[#00d26a]/50 bg-[#00d26a]/8 shadow-[inset_0_0_0_1px_rgba(0,210,106,0.15)]"
+                          : "border-white/8 bg-[#060f17] hover:border-white/18"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          animate={{ color: active ? "#00d26a" : "rgba(255,255,255,0.35)" }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </motion.div>
+                        <span className={`text-sm font-semibold transition-colors ${active ? "text-[#00d26a]" : "text-white/65"}`}>
+                          {label}
+                        </span>
+                        {active && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="ml-auto w-3.5 h-3.5 rounded-full bg-[#00d26a] flex items-center justify-center"
+                          >
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0c2230]" />
+                          </motion.div>
+                        )}
+                      </div>
+                      <span className="text-white/35 text-xs leading-tight">{desc}</span>
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Name */}
             <div>
-              <label className="text-white/55 text-xs font-medium mb-1.5 block">
-                Full name
-              </label>
+              <label className="text-white/55 text-xs font-medium mb-1.5 block">Full name</label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                <motion.div
+                  animate={{ color: focused === "name" ? "#00d26a" : fieldErrors.name ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                >
+                  <User className="w-4 h-4" />
+                </motion.div>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setField("name", e.target.value)}
+                  onFocus={() => setFocused("name")}
+                  onBlur={() => setFocused(null)}
                   placeholder="Jane Smith"
                   autoComplete="name"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none focus:ring-1 transition-all ${
-                    fieldErrors.name
-                      ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                      : "border-white/10 focus:border-[#00d26a]/50 focus:ring-[#00d26a]/20"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all duration-200 ${inputStyle("name")}`}
                 />
               </div>
               <FieldError msg={fieldErrors.name} />
@@ -228,104 +254,117 @@ function SignupForm() {
 
             {/* Email */}
             <div>
-              <label className="text-white/55 text-xs font-medium mb-1.5 block">
-                Email address
-              </label>
+              <label className="text-white/55 text-xs font-medium mb-1.5 block">Email address</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                <motion.div
+                  animate={{ color: focused === "email" ? "#00d26a" : fieldErrors.email ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                >
+                  <Mail className="w-4 h-4" />
+                </motion.div>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setField("email", e.target.value)}
+                  onFocus={() => setFocused("email")}
+                  onBlur={() => setFocused(null)}
                   placeholder="you@example.com"
                   autoComplete="email"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none focus:ring-1 transition-all ${
-                    fieldErrors.email
-                      ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                      : "border-white/10 focus:border-[#00d26a]/50 focus:ring-[#00d26a]/20"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all duration-200 ${inputStyle("email")}`}
                 />
               </div>
               <FieldError msg={fieldErrors.email} />
             </div>
 
-            {/* Password + strength meter */}
+            {/* Password */}
             <div>
-              <label className="text-white/55 text-xs font-medium mb-1.5 block">
-                Password
-              </label>
+              <label className="text-white/55 text-xs font-medium mb-1.5 block">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                <motion.div
+                  animate={{ color: focused === "password" ? "#00d26a" : fieldErrors.password ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                >
+                  <Lock className="w-4 h-4" />
+                </motion.div>
                 <input
                   type={showPw ? "text" : "password"}
                   value={form.password}
                   onChange={(e) => setField("password", e.target.value)}
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused(null)}
                   placeholder="Min. 8 chars, 1 uppercase, 1 number"
                   autoComplete="new-password"
-                  className={`w-full pl-10 pr-11 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none focus:ring-1 transition-all ${
-                    fieldErrors.password
-                      ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                      : "border-white/10 focus:border-[#00d26a]/50 focus:ring-[#00d26a]/20"
-                  }`}
+                  className={`w-full pl-10 pr-11 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all duration-200 ${inputStyle("password")}`}
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowPw((s) => !s)}
-                  style={{ transform: "translateY(-50%)" }}
-                  className="absolute right-3.5 top-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  whileTap={{ scale: 0.85 }}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                   tabIndex={-1}
                 >
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </motion.button>
               </div>
               <FieldError msg={fieldErrors.password} />
 
               {/* Strength bar */}
-              {form.password.length > 0 && (
-                <div className="mt-2">
-                  <div className="flex gap-1 mb-1">
-                    {[1, 2, 3, 4].map((lvl) => (
-                      <div
-                        key={lvl}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          lvl <= strength.level ? strength.color : "bg-white/10"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <p className={`text-xs ${strength.level >= 3 ? "text-[#00d26a]" : "text-white/40"}`}>
-                    {strength.label}
-                  </p>
-                </div>
-              )}
+              <AnimatePresence>
+                {form.password.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 overflow-hidden"
+                  >
+                    <div className="flex gap-1 mb-1">
+                      {[1, 2, 3, 4].map((lvl) => (
+                        <motion.div
+                          key={lvl}
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.3, delay: (lvl - 1) * 0.05 }}
+                          style={{ originX: 0 }}
+                          className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                            lvl <= strength.level ? strength.color : "bg-white/10"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-xs transition-colors duration-300 ${strength.level >= 3 ? "text-[#00d26a]" : "text-white/40"}`}>
+                      {strength.label}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Submit */}
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
-              className="btn-scale w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm
+              whileHover={!loading ? { scale: 1.015 } : {}}
+              whileTap={!loading ? { scale: 0.975 } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm
                 shadow-[0_0_18px_rgba(0,210,106,0.35)]
                 hover:shadow-[0_0_28px_rgba(0,210,106,0.5)]
                 disabled:opacity-60 disabled:cursor-not-allowed
-                transition-all duration-200 mt-2"
+                transition-shadow duration-200 mt-2"
             >
-              {loading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Creating account…</>
-              ) : (
-                "Create Account"
-              )}
-            </button>
+              {loading
+                ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account…</>
+                : "Create Account"
+              }
+            </motion.button>
 
             <p className="text-white/25 text-xs text-center">
               By signing up you agree to our{" "}
-              <Link href="#" className="text-white/45 hover:underline" style={{ transform: "none" }}>
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="#" className="text-white/45 hover:underline" style={{ transform: "none" }}>
-                Privacy Policy
-              </Link>
+              <Link href="#" className="text-white/45 hover:underline">Terms</Link>
+              {" "}and{" "}
+              <Link href="#" className="text-white/45 hover:underline">Privacy Policy</Link>
             </p>
           </form>
 
@@ -335,13 +374,24 @@ function SignupForm() {
               <Link
                 href={`/login${redirect !== "/" ? `?redirect=${redirect}` : ""}`}
                 className="text-[#00d26a] font-medium hover:underline"
-                style={{ transform: "none" }}
               >
                 Sign in
               </Link>
             </p>
           </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-4 px-4 py-3 rounded-2xl bg-[#0d1f2d]/60 border border-white/6 text-center"
+        >
+          <p className="text-white/25 text-xs">
+            Backend must be running on{" "}
+            <code className="text-white/45 font-mono">:5000</code>
+          </p>
+        </motion.div>
       </motion.div>
     </div>
   );
