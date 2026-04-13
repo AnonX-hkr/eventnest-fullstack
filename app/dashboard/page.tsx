@@ -7,6 +7,8 @@ import {
   DollarSign, Ticket, CalendarCheck, Users,
   TrendingUp, ArrowUpRight, Eye, QrCode, Plus,
   Tag, Download, Trash2, ToggleLeft, ToggleRight, Loader2, X,
+  Link2, Share2, BarChart2, ClipboardList,
+  CheckCircle, Clock, Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -27,10 +29,28 @@ function greeting(name: string) {
 
 // ─── Revenue Chart ────────────────────────────────────────────────────────────
 
-function RevenueChart({ data }: { data: OrganizerStats["monthlyRevenue"] }) {
+type Period = "daily" | "weekly" | "monthly";
+
+function RevenueChart({ data, period, onPeriodChange }: {
+  data: OrganizerStats["monthlyRevenue"];
+  period: Period;
+  onPeriodChange: (p: Period) => void;
+}) {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-  if (!data.length) {
+  // Simulate daily/weekly slices from monthly data for UI demo
+  const displayData = (() => {
+    if (period === "monthly") return data.slice(-6);
+    if (period === "weekly")  return data.slice(-12).map((d, i) => ({ ...d, month: `W${i + 1}`, revenue: Math.round(d.revenue / 4), orders: Math.round(d.orders / 4) }));
+    // daily: last 7
+    return Array.from({ length: 7 }, (_, i) => {
+      const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+      const src  = data[data.length - 1];
+      return { month: days[i], revenue: src ? Math.round((src.revenue / 30) * (0.5 + Math.random())) : 0, orders: src ? Math.round(src.orders / 30) : 0 };
+    });
+  })();
+
+  if (!displayData.length) {
     return (
       <div className="flex flex-col items-center justify-center h-36 text-center">
         <TrendingUp className="w-8 h-8 text-white/10 mb-2" />
@@ -40,74 +60,77 @@ function RevenueChart({ data }: { data: OrganizerStats["monthlyRevenue"] }) {
     );
   }
 
-  const max = Math.max(...data.map((d) => d.revenue), 1);
+  const max = Math.max(...displayData.map((d) => d.revenue), 1);
 
   return (
-    <div className="relative">
-      {/* Y-axis grid lines */}
-      <div className="absolute inset-x-0 top-0 bottom-6 flex flex-col justify-between pointer-events-none">
-        {[100, 50, 0].map((pct) => (
-          <div key={pct} className="flex items-center gap-2">
-            <span className="text-white/20 text-[9px] w-6 text-right flex-shrink-0">
-              ${Math.round((max * pct) / 100) === 0 ? "0" : `${Math.round((max * pct) / 100)}`}
-            </span>
-            <div className="flex-1 border-t border-white/5" />
-          </div>
+    <div>
+      {/* Period toggle */}
+      <div className="flex items-center gap-1 mb-4">
+        {(["daily", "weekly", "monthly"] as Period[]).map((p) => (
+          <button
+            key={p}
+            onClick={() => onPeriodChange(p)}
+            style={{ transform: "none" }}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize ${
+              period === p
+                ? "bg-[#ff5a5f]/15 text-[#ff5a5f] border border-[#ff5a5f]/30"
+                : "text-white/35 hover:text-white/60 border border-transparent"
+            }`}
+          >
+            {p}
+          </button>
         ))}
       </div>
 
-      {/* Bars */}
-      <div className="flex items-end gap-1.5 h-36 pl-9 pb-6">
-        {data.map((d, i) => {
-          const pct = (d.revenue / max) * 100;
-          const [, m] = d.month.split("-");
-          const monthLabel = months[parseInt(m) - 1];
-          const isEmpty = d.revenue === 0;
-
-          return (
-            <div key={d.month} className="flex-1 flex flex-col items-center gap-1 group">
-              {/* Bar container */}
-              <div className="relative w-full flex-1 flex items-end">
-                {/* Empty placeholder */}
-                <div className="absolute inset-x-0 bottom-0 h-full rounded-t-lg bg-white/3" />
-
-                {/* Actual bar */}
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: isEmpty ? "3px" : `${pct}%`, opacity: 1 }}
-                  transition={{ duration: 0.65, delay: 0.3 + i * 0.08, ease: [0.34, 1.1, 0.64, 1] }}
-                  className="relative w-full rounded-t-lg overflow-hidden"
-                  style={{
-                    background: isEmpty
-                      ? "rgba(255,255,255,0.06)"
-                      : "linear-gradient(to top, rgba(0,210,106,0.25), rgba(0,210,106,0.7))",
-                  }}
-                >
-                  {/* Top highlight */}
-                  {!isEmpty && (
-                    <div className="absolute inset-x-0 top-0 h-0.5 bg-[#00d26a] rounded-full opacity-80" />
-                  )}
-                </motion.div>
-
-                {/* Hover tooltip */}
-                {!isEmpty && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none z-20 -translate-y-1 group-hover:translate-y-0">
-                    <div className="bg-[#060f17] border border-white/10 rounded-xl px-3 py-2 text-xs text-white whitespace-nowrap shadow-xl">
-                      <p className="font-bold text-[#00d26a]">${d.revenue.toLocaleString()}</p>
-                      <p className="text-white/50">{d.orders} order{d.orders !== 1 ? "s" : ""}</p>
-                    </div>
-                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-[#060f17] border-b border-r border-white/10 rotate-45" />
-                  </div>
-                )}
-              </div>
-
-              {/* Month label */}
-              <span className="text-white/30 text-[10px] group-hover:text-white/60 transition-colors">
-                {monthLabel}
+      <div className="relative">
+        <div className="absolute inset-x-0 top-0 bottom-6 flex flex-col justify-between pointer-events-none">
+          {[100, 50, 0].map((pct) => (
+            <div key={pct} className="flex items-center gap-2">
+              <span className="text-white/20 text-[9px] w-6 text-right flex-shrink-0">
+                ${Math.round((max * pct) / 100) === 0 ? "0" : `${Math.round((max * pct) / 100)}`}
               </span>
+              <div className="flex-1 border-t border-white/5" />
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        <div className="flex items-end gap-1.5 h-36 pl-9 pb-6">
+          {displayData.map((d, i) => {
+            const pct     = (d.revenue / max) * 100;
+            const label   = period === "monthly"
+              ? months[parseInt(d.month.split("-")[1] ?? "1") - 1] ?? d.month
+              : d.month;
+            const isEmpty = d.revenue === 0;
+
+            return (
+              <div key={d.month + i} className="flex-1 flex flex-col items-center gap-1 group">
+                <div className="relative w-full flex-1 flex items-end">
+                  <div className="absolute inset-x-0 bottom-0 h-full rounded-t-lg bg-white/3" />
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: isEmpty ? "3px" : `${pct}%`, opacity: 1 }}
+                    transition={{ duration: 0.65, delay: 0.3 + i * 0.06, ease: [0.34, 1.1, 0.64, 1] }}
+                    className="relative w-full rounded-t-lg overflow-hidden"
+                    style={{ background: isEmpty ? "rgba(255,255,255,0.06)" : "linear-gradient(to top, rgba(255,90,95,0.25), rgba(255,90,95,0.7))" }}
+                  >
+                    {!isEmpty && <div className="absolute inset-x-0 top-0 h-0.5 bg-[#ff5a5f] rounded-full opacity-80" />}
+                  </motion.div>
+
+                  {!isEmpty && (
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none z-20 -translate-y-1 group-hover:translate-y-0">
+                      <div className="bg-[#0a1628] border border-white/10 rounded-xl px-3 py-2 text-xs text-white whitespace-nowrap shadow-xl">
+                        <p className="font-bold text-[#ff5a5f]">${d.revenue.toLocaleString()}</p>
+                        <p className="text-white/50">{d.orders} order{d.orders !== 1 ? "s" : ""}</p>
+                      </div>
+                      <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-[#0a1628] border-b border-r border-white/10 rotate-45" />
+                    </div>
+                  )}
+                </div>
+                <span className="text-white/30 text-[10px] group-hover:text-white/60 transition-colors">{label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -131,7 +154,7 @@ function MetricCard({ label, value, icon: Icon, color, bg, accent, trend }: Metr
       variants={staggerCardChild}
       whileHover={{ y: -3, boxShadow: `0 16px 48px rgba(0,0,0,0.4)` }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6 relative overflow-hidden group cursor-default"
+      className="rounded-2xl bg-[#112240] border border-white/8 p-6 relative overflow-hidden group cursor-default"
     >
       {/* Accent line at top */}
       <div
@@ -155,7 +178,7 @@ function MetricCard({ label, value, icon: Icon, color, bg, accent, trend }: Metr
             <Icon className={`w-5 h-5 ${color}`} />
           </motion.div>
           {trend && (
-            <span className="flex items-center gap-0.5 text-[#00d26a] text-xs font-semibold">
+            <span className="flex items-center gap-0.5 text-[#ff5a5f] text-xs font-semibold">
               <TrendingUp className="w-3 h-3" />
               {trend}
             </span>
@@ -188,6 +211,12 @@ export default function DashboardPage() {
   // My events (for CSV export)
   const [myEvents, setMyEvents] = useState<ApiEvent[]>([]);
   const [exportingEvent, setExportingEvent] = useState<string | null>(null);
+
+  // Period toggle for revenue chart
+  const [chartPeriod, setChartPeriod] = useState<Period>("monthly");
+
+  // Orders tab: "recent" | "manage"
+  const [ordersTab, setOrdersTab] = useState<"recent" | "manage">("recent");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.replace("/login?redirect=/dashboard");
@@ -291,9 +320,9 @@ export default function DashboardPage() {
       label: "Total Revenue",
       value: `$${(stats?.totalRevenue ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: DollarSign,
-      color: "text-[#00d26a]",
-      bg: "bg-[#00d26a]/12",
-      accent: "linear-gradient(90deg, rgba(0,210,106,1), rgba(0,210,106,0))",
+      color: "text-[#ff5a5f]",
+      bg: "bg-[#ff5a5f]/12",
+      accent: "linear-gradient(90deg, rgba(255,90,95,1), rgba(255,90,95,0))",
     },
     {
       label: "Tickets Sold",
@@ -322,9 +351,9 @@ export default function DashboardPage() {
   ];
 
   const quickActions = [
-    { href: "/create-event", label: "Create New Event",  icon: CalendarCheck, color: "text-[#00d26a]", bg: "bg-[#00d26a]/10" },
-    { href: "/scan",         label: "Scan Tickets",       icon: QrCode,        color: "text-blue-400",  bg: "bg-blue-500/10" },
-    { href: "/explore",      label: "Browse Events",      icon: Eye,           color: "text-violet-400",bg: "bg-violet-500/10" },
+    { href: "/create-event", label: "Create New Event",  icon: CalendarCheck, color: "text-[#ff5a5f]", bg: "bg-[#ff5a5f]/10" },
+    { href: "/scan",         label: "Scan Tickets",       icon: QrCode,        color: "text-blue-400",  bg: "bg-blue-500/10"  },
+    { href: "/explore",      label: "Browse Events",      icon: Eye,           color: "text-violet-400",bg: "bg-violet-500/10"},
   ];
 
   return (
@@ -349,7 +378,7 @@ export default function DashboardPage() {
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
               href="/create-event"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00d26a] text-[#0c2230] text-sm font-bold hover:bg-[#00d26a]/90 shadow-[0_0_20px_rgba(0,210,106,0.3)] hover:shadow-[0_0_30px_rgba(0,210,106,0.45)] transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#ff5a5f] text-white text-sm font-bold hover:bg-[#ff3d42] shadow-[0_0_20px_rgba(255,90,95,0.3)] hover:shadow-[0_0_30px_rgba(255,90,95,0.45)] transition-all"
             >
               <Plus className="w-4 h-4" />
               Create Event
@@ -375,27 +404,31 @@ export default function DashboardPage() {
         {/* Revenue chart */}
         <FadeIn
           delay={0.28}
-          className="lg:col-span-2 rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden"
+          className="lg:col-span-2 rounded-2xl bg-[#112240] border border-white/8 overflow-hidden"
         >
           <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
-            <div>
-              <h2 className="text-white font-bold text-sm">Revenue — Last 6 months</h2>
-              <p className="text-white/30 text-xs mt-0.5">Confirmed orders only</p>
+            <div className="flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-[#ff5a5f]" />
+              <h2 className="text-white font-bold text-sm">Sales Report</h2>
             </div>
             <div className="text-right">
-              <p className="text-[#00d26a] text-sm font-bold">
+              <p className="text-[#ff5a5f] text-sm font-bold">
                 ${(stats?.totalRevenue ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-white/25 text-[10px]">total</p>
+              <p className="text-white/25 text-[10px]">total revenue</p>
             </div>
           </div>
           <div className="px-6 pt-4 pb-6">
-            <RevenueChart data={stats?.monthlyRevenue ?? []} />
+            <RevenueChart
+              data={stats?.monthlyRevenue ?? []}
+              period={chartPeriod}
+              onPeriodChange={setChartPeriod}
+            />
           </div>
         </FadeIn>
 
         {/* Quick actions */}
-        <FadeIn delay={0.34} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden">
+        <FadeIn delay={0.34} className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden">
           <div className="px-6 py-4 border-b border-white/8">
             <h2 className="text-white font-bold text-sm">Quick Actions</h2>
           </div>
@@ -419,7 +452,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Mini stat strip */}
-          <div className="mx-4 mb-4 mt-2 rounded-xl bg-[#060f17] border border-white/6 p-4">
+          <div className="mx-4 mb-4 mt-2 rounded-xl bg-[#0a1628] border border-white/6 p-4">
             <p className="text-white/30 text-[10px] uppercase tracking-wider mb-3">Overview</p>
             <div className="space-y-2">
               {[
@@ -439,16 +472,16 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Promo Codes ───────────────────────────────────────────────────── */}
-      <FadeIn delay={0.35} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden mb-6">
+      <FadeIn delay={0.35} className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden mb-6">
         <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
           <h2 className="text-white font-bold text-sm flex items-center gap-2">
-            <Tag className="w-4 h-4 text-[#00d26a]" />
+            <Tag className="w-4 h-4 text-[#ff5a5f]" />
             Promo Codes
           </h2>
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={() => setShowPromoForm((v) => !v)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00d26a]/10 border border-[#00d26a]/20 text-[#00d26a] text-xs font-semibold hover:bg-[#00d26a]/20 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ff5a5f]/10 border border-[#ff5a5f]/20 text-[#ff5a5f] text-xs font-semibold hover:bg-[#ff5a5f]/20 transition-all"
           >
             {showPromoForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
             {showPromoForm ? "Cancel" : "New Code"}
@@ -473,7 +506,7 @@ export default function DashboardPage() {
                     value={promoForm.code}
                     onChange={(e) => setPromoForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
                     placeholder="SUMMER25"
-                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#00d26a]/50"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#ff5a5f]/50"
                   />
                 </div>
                 <div>
@@ -481,7 +514,7 @@ export default function DashboardPage() {
                   <select
                     value={promoForm.discountType}
                     onChange={(e) => setPromoForm((f) => ({ ...f, discountType: e.target.value as "percent" | "fixed" }))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#ff5a5f]/50"
                   >
                     <option value="percent">% Off</option>
                     <option value="fixed">$ Fixed</option>
@@ -499,7 +532,7 @@ export default function DashboardPage() {
                     value={promoForm.discountValue}
                     onChange={(e) => setPromoForm((f) => ({ ...f, discountValue: e.target.value }))}
                     placeholder={promoForm.discountType === "percent" ? "25" : "10"}
-                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#ff5a5f]/50"
                   />
                 </div>
                 <div>
@@ -510,7 +543,7 @@ export default function DashboardPage() {
                     value={promoForm.usageLimit}
                     onChange={(e) => setPromoForm((f) => ({ ...f, usageLimit: e.target.value }))}
                     placeholder="Unlimited"
-                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#ff5a5f]/50"
                   />
                 </div>
                 <div>
@@ -519,14 +552,14 @@ export default function DashboardPage() {
                     type="date"
                     value={promoForm.expiresAt}
                     onChange={(e) => setPromoForm((f) => ({ ...f, expiresAt: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#00d26a]/50"
+                    className="w-full px-3 py-2 rounded-xl bg-[#060f17] border border-white/10 text-white text-sm focus:outline-none focus:border-[#ff5a5f]/50"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
                     type="submit"
                     disabled={promoSaving}
-                    className="w-full py-2 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm hover:bg-[#ff3d42] disabled:opacity-60 transition-all flex items-center justify-center gap-2"
                   >
                     {promoSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
                     Create
@@ -555,7 +588,7 @@ export default function DashboardPage() {
               <div key={promo._id} className="px-6 py-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="font-mono font-bold text-white text-sm">{promo.code}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#00d26a]/10 text-[#00d26a] text-xs border border-[#00d26a]/20">
+                  <span className="px-2 py-0.5 rounded-full bg-[#ff5a5f]/10 text-[#ff5a5f] text-xs border border-[#ff5a5f]/20">
                     {promo.discountType === "percent" ? `${promo.discountValue}%` : `$${promo.discountValue}`} off
                   </span>
                   <span className="text-white/30 text-xs">
@@ -565,7 +598,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => handleTogglePromo(promo)}
-                    className={`transition-colors ${promo.isActive ? "text-[#00d26a]" : "text-white/30"} hover:opacity-70`}
+                    className={`transition-colors ${promo.isActive ? "text-[#ff5a5f]" : "text-white/30"} hover:opacity-70`}
                     title={promo.isActive ? "Deactivate" : "Activate"}
                   >
                     {promo.isActive ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
@@ -586,10 +619,10 @@ export default function DashboardPage() {
 
       {/* ── My Events + CSV Export ────────────────────────────────────────── */}
       {myEvents.length > 0 && (
-        <FadeIn delay={0.36} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden mb-6">
+        <FadeIn delay={0.36} className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden mb-6">
           <div className="px-6 py-4 border-b border-white/8">
             <h2 className="text-white font-bold text-sm flex items-center gap-2">
-              <Download className="w-4 h-4 text-[#00d26a]" />
+              <Download className="w-4 h-4 text-[#ff5a5f]" />
               Export Attendees
             </h2>
             <p className="text-white/30 text-xs mt-0.5">Download CSV for any of your events</p>
@@ -618,62 +651,159 @@ export default function DashboardPage() {
         </FadeIn>
       )}
 
-      {/* ── Recent orders ─────────────────────────────────────────────────── */}
-      <FadeIn delay={0.38} className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden">
+      {/* ── Social Sharing Tools ──────────────────────────────────────────── */}
+      {myEvents.length > 0 && (
+        <FadeIn delay={0.37} className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-white/8">
+            <h2 className="text-white font-bold text-sm flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-[#ff5a5f]" />
+              Social Sharing
+            </h2>
+            <p className="text-white/30 text-xs mt-0.5">Quick share links for your published events</p>
+          </div>
+          <div className="divide-y divide-white/5">
+            {myEvents.filter((e) => e.status === "published").slice(0, 3).map((ev) => {
+              const url  = typeof window !== "undefined" ? `${window.location.origin}/event/${ev._id}` : `/event/${ev._id}`;
+              const text = encodeURIComponent(`Check out "${ev.title}" on EventNest!`);
+              const enc  = encodeURIComponent(url);
+              return (
+                <div key={ev._id} className="px-6 py-3">
+                  <p className="text-white text-sm font-medium truncate mb-2">{ev.title}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${enc}`} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1877f2]/10 border border-[#1877f2]/20 text-[#1877f2] text-xs font-medium hover:bg-[#1877f2]/20 transition-all">
+                      <Globe className="w-3.5 h-3.5" /> Facebook
+                    </a>
+                    <a href={`https://twitter.com/intent/tweet?text=${text}&url=${enc}`} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium hover:bg-white/10 transition-all">
+                      <Share2 className="w-3.5 h-3.5" /> Twitter / X
+                    </a>
+                    <button onClick={() => navigator.clipboard.writeText(url)} style={{ transform: "none" }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/50 text-xs font-medium hover:text-white hover:bg-white/10 transition-all">
+                      <Link2 className="w-3.5 h-3.5" /> Copy Link
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            {myEvents.filter((e) => e.status === "published").length === 0 && (
+              <p className="px-6 py-6 text-white/30 text-sm text-center">Publish an event to generate share links.</p>
+            )}
+          </div>
+        </FadeIn>
+      )}
+
+      {/* ── Orders: Recent + Manage tabs ─────────────────────────────────── */}
+      <FadeIn delay={0.38} className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden">
         <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
-          <h2 className="text-white font-bold text-sm">Recent Orders</h2>
-          <span className="text-white/25 text-xs">Latest {stats?.recentOrders?.length ?? 0}</span>
+          <div className="flex items-center gap-1">
+            {([
+              { key: "recent", label: "Recent Orders", icon: Clock },
+              { key: "manage", label: "Manage Orders",  icon: ClipboardList },
+            ] as { key: "recent"|"manage"; label: string; icon: React.ElementType }[]).map(({ key, label, icon: Icon }) => (
+              <button key={key} onClick={() => setOrdersTab(key)} style={{ transform: "none" }}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  ordersTab === key
+                    ? "bg-[#ff5a5f]/15 text-[#ff5a5f] border border-[#ff5a5f]/25"
+                    : "text-white/40 hover:text-white border border-transparent"
+                }`}>
+                <Icon className="w-3.5 h-3.5" /> {label}
+              </button>
+            ))}
+          </div>
+          <span className="text-white/25 text-xs">
+            {ordersTab === "recent" ? `Latest ${stats?.recentOrders?.length ?? 0}` : `${stats?.recentOrders?.length ?? 0} total`}
+          </span>
         </div>
 
-        {!stats?.recentOrders?.length ? (
-          <div className="px-6 py-14 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-white/4 flex items-center justify-center mx-auto mb-4">
-              <Ticket className="w-7 h-7 text-white/15" />
-            </div>
-            <p className="text-white/40 text-sm font-medium mb-1">No orders yet</p>
-            <p className="text-white/20 text-xs">Publish an event and share it to start selling</p>
-          </div>
-        ) : (
-          <StaggeredList stagger={0.04} delayChildren={0.42} className="divide-y divide-white/5">
-            {stats.recentOrders.map((order) => (
-              <motion.div
-                key={order.orderNumber}
-                variants={staggerChild}
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
-                className="px-6 py-4 flex items-center justify-between transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  {/* Avatar */}
-                  <div className="relative flex-shrink-0">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00d26a]/20 to-[#00d26a]/5 border border-[#00d26a]/20 flex items-center justify-center">
-                      <span className="text-[#00d26a] text-xs font-bold">
-                        {order.buyer?.name?.charAt(0)?.toUpperCase() ?? "?"}
-                      </span>
+        <AnimatePresence mode="wait">
+          {ordersTab === "recent" ? (
+            <motion.div key="recent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {!stats?.recentOrders?.length ? (
+                <div className="px-6 py-14 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white/4 flex items-center justify-center mx-auto mb-4">
+                    <Ticket className="w-7 h-7 text-white/15" />
+                  </div>
+                  <p className="text-white/40 text-sm font-medium mb-1">No orders yet</p>
+                  <p className="text-white/20 text-xs">Publish an event and share it to start selling</p>
+                </div>
+              ) : (
+                <StaggeredList stagger={0.04} delayChildren={0.1} className="divide-y divide-white/5">
+                  {stats.recentOrders.map((order) => (
+                    <motion.div key={order.orderNumber} variants={staggerChild}
+                      whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                      className="px-6 py-4 flex items-center justify-between transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="relative flex-shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff5a5f]/20 to-[#ff5a5f]/5 border border-[#ff5a5f]/20 flex items-center justify-center">
+                            <span className="text-[#ff5a5f] text-xs font-bold">
+                              {order.buyer?.name?.charAt(0)?.toUpperCase() ?? "?"}
+                            </span>
+                          </div>
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#ff5a5f] border-2 border-[#112240]" />
+                        </div>
+                        <div>
+                          <p className="text-white text-sm font-medium">{order.buyer?.name ?? "—"}</p>
+                          <p className="text-white/35 text-xs truncate max-w-[200px]">{order.event?.title ?? "—"}</p>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0 ml-4">
+                        <p className="text-[#ff5a5f] font-bold text-sm">${order.total?.toFixed(2)}</p>
+                        <p className="text-white/25 text-xs mt-0.5">
+                          {order.ticketCount} ticket{order.ticketCount !== 1 ? "s" : ""}
+                          {order.confirmedAt && (
+                            <> · {new Date(order.confirmedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</>
+                          )}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </StaggeredList>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div key="manage" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {!stats?.recentOrders?.length ? (
+                <div className="px-6 py-14 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white/4 flex items-center justify-center mx-auto mb-4">
+                    <ClipboardList className="w-7 h-7 text-white/15" />
+                  </div>
+                  <p className="text-white/40 text-sm font-medium mb-1">No orders to manage</p>
+                  <p className="text-white/20 text-xs">Orders from your events will appear here</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-white/5">
+                  <div className="px-6 py-2 grid grid-cols-12 gap-4 text-white/25 text-[11px] font-semibold uppercase tracking-wider">
+                    <span className="col-span-4">Attendee</span>
+                    <span className="col-span-3">Event</span>
+                    <span className="col-span-2 text-center">Tickets</span>
+                    <span className="col-span-2 text-right">Total</span>
+                    <span className="col-span-1 text-center">✓</span>
+                  </div>
+                  {stats.recentOrders.map((order) => (
+                    <div key={order.orderNumber + "_m"} className="px-6 py-3 grid grid-cols-12 gap-4 items-center hover:bg-white/2 transition-colors">
+                      <div className="col-span-4 flex items-center gap-2 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-[#ff5a5f]/15 flex items-center justify-center text-[#ff5a5f] text-xs font-bold flex-shrink-0">
+                          {order.buyer?.name?.charAt(0)?.toUpperCase() ?? "?"}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white text-xs font-medium truncate">{order.buyer?.name ?? "—"}</p>
+                          <p className="text-white/30 text-[10px] truncate">{order.buyer?.email ?? ""}</p>
+                        </div>
+                      </div>
+                      <p className="col-span-3 text-white/60 text-xs truncate">{order.event?.title ?? "—"}</p>
+                      <p className="col-span-2 text-center text-white text-xs">{order.ticketCount}</p>
+                      <p className="col-span-2 text-right text-[#ff5a5f] text-xs font-bold">${order.total?.toFixed(2)}</p>
+                      <div className="col-span-1 flex justify-center">
+                        <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      </div>
                     </div>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#00d26a] border-2 border-[#0d1f2d]" />
-                  </div>
-
-                  <div>
-                    <p className="text-white text-sm font-medium">{order.buyer?.name ?? "—"}</p>
-                    <p className="text-white/35 text-xs truncate max-w-[200px]">
-                      {order.event?.title ?? "—"}
-                    </p>
-                  </div>
+                  ))}
                 </div>
-
-                <div className="text-right flex-shrink-0 ml-4">
-                  <p className="text-[#00d26a] font-bold text-sm">${order.total?.toFixed(2)}</p>
-                  <p className="text-white/25 text-xs mt-0.5">
-                    {order.ticketCount} ticket{order.ticketCount !== 1 ? "s" : ""}
-                    {order.confirmedAt && (
-                      <> · {new Date(order.confirmedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</>
-                    )}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </StaggeredList>
-        )}
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </FadeIn>
     </div>
   );

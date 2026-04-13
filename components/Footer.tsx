@@ -86,10 +86,10 @@ export default function Footer() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-3 px-5 py-3 rounded-xl bg-[#00d26a]/10 border border-[#00d26a]/25"
+                className="flex items-center gap-3 px-5 py-3 rounded-xl bg-[#ff5a5f]/10 border border-[#ff5a5f]/25"
               >
-                <CheckCircle className="w-5 h-5 text-[#00d26a]" />
-                <span className="text-[#00d26a] font-semibold text-sm">
+                <CheckCircle className="w-5 h-5 text-[#ff5a5f]" />
+                <span className="text-[#ff5a5f] font-semibold text-sm">
                   You're subscribed — welcome aboard!
                 </span>
               </motion.div>
@@ -105,16 +105,16 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#0c2230] border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#00d26a]/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#112240] border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#ff5a5f]/50 transition-all"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={subLoading}
-                  className="btn-scale flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 hover:shadow-lg hover:shadow-[#00d26a]/25 disabled:opacity-70 transition-all whitespace-nowrap"
+                  className="btn-scale flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#ff5a5f] text-[#112240] font-bold text-sm hover:bg-[#ff5a5f]/90 hover:shadow-lg hover:shadow-[#ff5a5f]/25 disabled:opacity-70 transition-all whitespace-nowrap"
                 >
                   {subLoading ? (
-                    <span className="w-4 h-4 border-2 border-[#0c2230]/30 border-t-[#0c2230] rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-[#112240]/30 border-t-[#112240] rounded-full animate-spin" />
                   ) : (
                     <>
                       Subscribe
@@ -134,11 +134,11 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-5 w-fit">
-              <div className="w-8 h-8 rounded-lg bg-[#00d26a] flex items-center justify-center">
-                <Ticket className="w-5 h-5 text-[#0c2230]" />
+              <div className="w-8 h-8 rounded-lg bg-[#ff5a5f] flex items-center justify-center">
+                <Ticket className="w-5 h-5 text-[#112240]" />
               </div>
               <span className="text-white font-bold text-lg tracking-tight">
-                Event<span className="text-[#00d26a]">Bookings</span>
+                Event<span className="text-[#ff5a5f]">Nest</span>
               </span>
             </Link>
 
@@ -179,7 +179,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-white/45 text-sm hover:text-[#00d26a] transition-colors"
+                      className="text-white/45 text-sm hover:text-[#ff5a5f] transition-colors"
                       style={{ display: "inline-block", transform: "none" }}
                     >
                       {link.label}
@@ -199,7 +199,7 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-4">
             {trustBadges.map((b) => (
               <div key={b.label} className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-[#00d26a]" />
+                <CheckCircle className="w-3.5 h-3.5 text-[#ff5a5f]" />
                 <div>
                   <span className="text-white/60 text-xs font-medium">{b.label}</span>
                   <span className="text-white/25 text-xs ml-1">· {b.sub}</span>
@@ -209,7 +209,7 @@ export default function Footer() {
           </div>
 
           <p className="text-white/25 text-xs text-center">
-            © 2026 EventBookings, Inc. All rights reserved.
+            © 2026 EventNest, Inc. All rights reserved.
           </p>
         </div>
       </div>

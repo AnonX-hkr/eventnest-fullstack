@@ -40,7 +40,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  published: "bg-[#00d26a]/15 text-[#00d26a] border-[#00d26a]/20",
+  published: "bg-[#ff5a5f]/15 text-[#ff5a5f] border-[#ff5a5f]/20",
   draft: "bg-white/8 text-white/50 border-white/10",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-300 border-blue-500/20",
@@ -129,7 +129,7 @@ export default function AdminPage() {
   if (authLoading || (!isAuthenticated && !authLoading)) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
       </div>
     );
   }
@@ -138,7 +138,7 @@ export default function AdminPage() {
     { label: "Total Users", value: stats.totalUsers.toLocaleString(), icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
     { label: "Organizers", value: stats.organizers.toLocaleString(), icon: ShieldCheck, color: "text-purple-400", bg: "bg-purple-500/10" },
     { label: "Total Events", value: stats.totalEvents.toLocaleString(), icon: Calendar, color: "text-amber-400", bg: "bg-amber-500/10" },
-    { label: "Platform Revenue", value: `$${stats.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-[#00d26a]", bg: "bg-[#00d26a]/10" },
+    { label: "Platform Revenue", value: `$${stats.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-[#ff5a5f]", bg: "bg-[#ff5a5f]/10" },
   ] : [];
 
   return (
@@ -163,7 +163,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab(tab)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
               activeTab === tab
-                ? "bg-[#00d26a] text-[#0c2230]"
+                ? "bg-[#ff5a5f] text-white"
                 : "text-white/50 hover:text-white"
             }`}
           >
@@ -198,7 +198,7 @@ export default function AdminPage() {
                 <motion.div
                   key={card.label}
                   variants={staggerChild}
-                  className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-5"
+                  className="rounded-2xl bg-[#112240] border border-white/8 p-5"
                 >
                   <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center mb-3`}>
                     <card.icon className={`w-5 h-5 ${card.color}`} />
@@ -212,12 +212,12 @@ export default function AdminPage() {
 
           {stats && (
             <FadeIn delay={0.3} className="mt-6 grid grid-cols-2 gap-4">
-              <div className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-5">
+              <div className="rounded-2xl bg-[#112240] border border-white/8 p-5">
                 <p className="text-white/50 text-xs mb-1">Published Events</p>
                 <p className="text-2xl font-extrabold text-white">{stats.publishedEvents}</p>
                 <p className="text-white/30 text-xs mt-1">of {stats.totalEvents} total</p>
               </div>
-              <div className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-5">
+              <div className="rounded-2xl bg-[#112240] border border-white/8 p-5">
                 <p className="text-white/50 text-xs mb-1">Confirmed Orders</p>
                 <p className="text-2xl font-extrabold text-white">{stats.totalOrders.toLocaleString()}</p>
                 <p className="text-white/30 text-xs mt-1">platform-wide</p>
@@ -239,13 +239,13 @@ export default function AdminPage() {
                 placeholder="Search name or email…"
                 value={userSearch}
                 onChange={(e) => { setUserSearch(e.target.value); setUserPage(1); }}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0d1f2d] border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#00d26a]/50"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#112240] border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#ff5a5f]/50"
               />
             </div>
             <select
               value={userRoleFilter}
               onChange={(e) => { setUserRoleFilter(e.target.value); setUserPage(1); }}
-              className="px-3 py-2.5 rounded-xl bg-[#0d1f2d] border border-white/10 text-white/70 text-sm focus:outline-none focus:border-[#00d26a]/50"
+              className="px-3 py-2.5 rounded-xl bg-[#112240] border border-white/10 text-white/70 text-sm focus:outline-none focus:border-[#ff5a5f]/50"
             >
               <option value="">All roles</option>
               <option value="admin">Admin</option>
@@ -269,7 +269,7 @@ export default function AdminPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden">
+            <div className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -302,7 +302,7 @@ export default function AdminPage() {
                           </select>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`flex items-center gap-1.5 text-xs font-medium ${u.isActive ? "text-[#00d26a]" : "text-red-400"}`}>
+                          <span className={`flex items-center gap-1.5 text-xs font-medium ${u.isActive ? "text-[#ff5a5f]" : "text-red-400"}`}>
                             {u.isActive ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                             {u.isActive ? "Active" : "Inactive"}
                           </span>
@@ -364,7 +364,7 @@ export default function AdminPage() {
             <select
               value={eventStatusFilter}
               onChange={(e) => { setEventStatusFilter(e.target.value); setEventPage(1); }}
-              className="px-3 py-2.5 rounded-xl bg-[#0d1f2d] border border-white/10 text-white/70 text-sm focus:outline-none focus:border-[#00d26a]/50"
+              className="px-3 py-2.5 rounded-xl bg-[#112240] border border-white/10 text-white/70 text-sm focus:outline-none focus:border-[#ff5a5f]/50"
             >
               <option value="">All statuses</option>
               <option value="published">Published</option>
@@ -388,7 +388,7 @@ export default function AdminPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden">
+            <div className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>

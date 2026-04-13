@@ -33,7 +33,7 @@ function getStrength(pw: string): { level: number; label: string; color: string 
   if (score <= 1) return { level: score, label: "Weak",   color: "bg-red-500"   };
   if (score === 2) return { level: score, label: "Fair",   color: "bg-amber-400" };
   if (score === 3) return { level: score, label: "Good",   color: "bg-blue-400"  };
-  return              { level: score, label: "Strong", color: "bg-[#00d26a]" };
+  return              { level: score, label: "Strong", color: "bg-[#ff5a5f]" };
 }
 
 // ─── Field error ──────────────────────────────────────────────────────────────
@@ -124,14 +124,14 @@ function SignupForm() {
   // Shared input border/ring helper
   function inputStyle(field: string) {
     if (fieldErrors[field]) return "border-red-500/50 ring-1 ring-red-500/20";
-    if (focused === field)  return "border-[#00d26a]/50 ring-1 ring-[#00d26a]/12";
+    if (focused === field)  return "border-[#ff5a5f]/50 ring-1 ring-[#ff5a5f]/12";
     return "border-white/10";
   }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16 bg-[#060f17]">
       {/* Background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-[#00d26a]/6 blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-[#ff5a5f]/6 blur-[100px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
@@ -139,7 +139,7 @@ function SignupForm() {
         transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="rounded-3xl bg-[#0d1f2d] border border-white/8 overflow-hidden shadow-2xl shadow-black/50">
+        <div className="rounded-3xl bg-[#112240] border border-white/8 overflow-hidden shadow-2xl shadow-black/50">
 
           {/* Header */}
           <div className="px-8 pt-8 pb-6 border-b border-white/6">
@@ -147,12 +147,12 @@ function SignupForm() {
               <motion.div
                 whileHover={{ scale: 1.1, rotate: -5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="w-8 h-8 rounded-lg bg-[#00d26a] flex items-center justify-center shadow-[0_0_14px_rgba(0,210,106,0.4)]"
+                className="w-8 h-8 rounded-lg bg-[#ff5a5f] flex items-center justify-center shadow-[0_0_14px_rgba(255,90,95,0.4)]"
               >
-                <Ticket className="w-5 h-5 text-[#0c2230]" />
+                <Ticket className="w-5 h-5 text-white" />
               </motion.div>
               <span className="text-white font-bold text-lg tracking-tight">
-                Event<span className="text-[#00d26a]">Bookings</span>
+                Event<span className="text-[#ff5a5f]">Nest</span>
               </span>
             </Link>
             <h1 className="text-2xl font-extrabold tracking-tight text-white mb-1">
@@ -196,27 +196,27 @@ function SignupForm() {
                       transition={{ type: "spring", stiffness: 400, damping: 20 }}
                       className={`flex flex-col items-start gap-1 p-3.5 rounded-xl border text-left transition-colors duration-200 ${
                         active
-                          ? "border-[#00d26a]/50 bg-[#00d26a]/8 shadow-[inset_0_0_0_1px_rgba(0,210,106,0.15)]"
+                          ? "border-[#ff5a5f]/50 bg-[#ff5a5f]/8 shadow-[inset_0_0_0_1px_rgba(255,90,95,0.15)]"
                           : "border-white/8 bg-[#060f17] hover:border-white/18"
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         <motion.div
-                          animate={{ color: active ? "#00d26a" : "rgba(255,255,255,0.35)" }}
+                          animate={{ color: active ? "#ff5a5f" : "rgba(255,255,255,0.35)" }}
                           transition={{ duration: 0.2 }}
                         >
                           <Icon className="w-4 h-4" />
                         </motion.div>
-                        <span className={`text-sm font-semibold transition-colors ${active ? "text-[#00d26a]" : "text-white/65"}`}>
+                        <span className={`text-sm font-semibold transition-colors ${active ? "text-[#ff5a5f]" : "text-white/65"}`}>
                           {label}
                         </span>
                         {active && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="ml-auto w-3.5 h-3.5 rounded-full bg-[#00d26a] flex items-center justify-center"
+                            className="ml-auto w-3.5 h-3.5 rounded-full bg-[#ff5a5f] flex items-center justify-center"
                           >
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0c2230]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#112240]" />
                           </motion.div>
                         )}
                       </div>
@@ -232,7 +232,7 @@ function SignupForm() {
               <label className="text-white/55 text-xs font-medium mb-1.5 block">Full name</label>
               <div className="relative">
                 <motion.div
-                  animate={{ color: focused === "name" ? "#00d26a" : fieldErrors.name ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  animate={{ color: focused === "name" ? "#ff5a5f" : fieldErrors.name ? "#f87171" : "rgba(255,255,255,0.3)" }}
                   transition={{ duration: 0.2 }}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
@@ -257,7 +257,7 @@ function SignupForm() {
               <label className="text-white/55 text-xs font-medium mb-1.5 block">Email address</label>
               <div className="relative">
                 <motion.div
-                  animate={{ color: focused === "email" ? "#00d26a" : fieldErrors.email ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  animate={{ color: focused === "email" ? "#ff5a5f" : fieldErrors.email ? "#f87171" : "rgba(255,255,255,0.3)" }}
                   transition={{ duration: 0.2 }}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
@@ -282,7 +282,7 @@ function SignupForm() {
               <label className="text-white/55 text-xs font-medium mb-1.5 block">Password</label>
               <div className="relative">
                 <motion.div
-                  animate={{ color: focused === "password" ? "#00d26a" : fieldErrors.password ? "#f87171" : "rgba(255,255,255,0.3)" }}
+                  animate={{ color: focused === "password" ? "#ff5a5f" : fieldErrors.password ? "#f87171" : "rgba(255,255,255,0.3)" }}
                   transition={{ duration: 0.2 }}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
@@ -333,7 +333,7 @@ function SignupForm() {
                         />
                       ))}
                     </div>
-                    <p className={`text-xs transition-colors duration-300 ${strength.level >= 3 ? "text-[#00d26a]" : "text-white/40"}`}>
+                    <p className={`text-xs transition-colors duration-300 ${strength.level >= 3 ? "text-[#ff5a5f]" : "text-white/40"}`}>
                       {strength.label}
                     </p>
                   </motion.div>
@@ -348,9 +348,9 @@ function SignupForm() {
               whileHover={!loading ? { scale: 1.015 } : {}}
               whileTap={!loading ? { scale: 0.975 } : {}}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm
-                shadow-[0_0_18px_rgba(0,210,106,0.35)]
-                hover:shadow-[0_0_28px_rgba(0,210,106,0.5)]
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm
+                shadow-[0_0_18px_rgba(255,90,95,0.35)]
+                hover:shadow-[0_0_28px_rgba(255,90,95,0.5)]
                 disabled:opacity-60 disabled:cursor-not-allowed
                 transition-shadow duration-200 mt-2"
             >
@@ -373,7 +373,7 @@ function SignupForm() {
               Already have an account?{" "}
               <Link
                 href={`/login${redirect !== "/" ? `?redirect=${redirect}` : ""}`}
-                className="text-[#00d26a] font-medium hover:underline"
+                className="text-[#ff5a5f] font-medium hover:underline"
               >
                 Sign in
               </Link>
@@ -385,7 +385,7 @@ function SignupForm() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 px-4 py-3 rounded-2xl bg-[#0d1f2d]/60 border border-white/6 text-center"
+          className="mt-4 px-4 py-3 rounded-2xl bg-[#112240]/60 border border-white/6 text-center"
         >
           <p className="text-white/25 text-xs">
             Backend must be running on{" "}
@@ -401,7 +401,7 @@ export default function SignupPage() {
   return (
     <Suspense fallback={
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
       </div>
     }>
       <SignupForm />

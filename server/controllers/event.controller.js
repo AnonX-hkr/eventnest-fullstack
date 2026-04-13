@@ -309,6 +309,33 @@ const getMyEvents = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/events/suggest?q=<query>
+// Autocomplete — returns up to 6 matching published event titles.
+// ─────────────────────────────────────────────────────────────────────────────
+const suggestEvents = async (req, res, next) => {
+  try {
+    const { q = "" } = req.query;
+    const trimmed = q.trim();
+    if (trimmed.length < 2) return sendSuccess(res, { suggestions: [] });
+
+    const regex = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+
+    const events = await Event.find({
+      status: "published",
+      deletedAt: null,
+      $or: [{ title: regex }, { "venue.city": regex }, { category: regex }],
+    })
+      .select("title category venue slug _id")
+      .limit(6)
+      .lean();
+
+    return sendSuccess(res, { suggestions: events });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createEvent,
   listEvents,
@@ -317,4 +344,5 @@ module.exports = {
   publishEvent,
   deleteEvent,
   getMyEvents,
+  suggestEvents,
 };

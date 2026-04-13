@@ -14,6 +14,7 @@ const {
   publishEvent,
   deleteEvent,
   getMyEvents,
+  suggestEvents,
 } = require("../controllers/event.controller");
 
 /**
@@ -23,6 +24,13 @@ const {
  * @access Public
  */
 router.get("/", optionalAuth, listEvents);
+
+/**
+ * @route  GET /api/events/suggest?q=<query>
+ * @desc   Autocomplete — returns up to 6 published event title matches
+ * @access Public
+ */
+router.get("/suggest", suggestEvents);
 
 /**
  * @route  GET /api/events/my

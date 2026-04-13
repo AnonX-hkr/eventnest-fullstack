@@ -17,9 +17,9 @@ export default function Hero() {
     <section className="relative min-h-[88vh] flex items-center overflow-hidden bg-[#060f17]">
       {/* Background gradient blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full bg-[#00d26a]/8 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-[#0c2230]/80 blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-[#00d26a]/4 blur-[150px]" />
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full bg-[#ff5a5f]/8 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-[#112240]/80 blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-[#ff5a5f]/4 blur-[150px]" />
       </div>
 
       {/* Grid overlay */}
@@ -27,7 +27,7 @@ export default function Hero() {
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
-            "linear-gradient(#00d26a 1px, transparent 1px), linear-gradient(90deg, #00d26a 1px, transparent 1px)",
+            "linear-gradient(#ff5a5f 1px, transparent 1px), linear-gradient(90deg, #ff5a5f 1px, transparent 1px)",
           backgroundSize: "50px 50px",
         }}
       />
@@ -40,9 +40,9 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#00d26a]/30 bg-[#00d26a]/10 text-[#00d26a] text-sm font-medium mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#ff5a5f]/30 bg-[#ff5a5f]/10 text-[#ff5a5f] text-sm font-medium mb-6"
           >
-            <Star className="w-3.5 h-3.5 fill-[#00d26a]" />
+            <Star className="w-3.5 h-3.5 fill-[#ff5a5f]" />
             The #1 Platform for Live Experiences
           </motion.div>
 
@@ -54,7 +54,7 @@ export default function Hero() {
             className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6"
           >
             Find Events{" "}
-            <span className="text-[#00d26a]">That Move</span>{" "}
+            <span className="text-[#ff5a5f]">That Move</span>{" "}
             You
           </motion.h1>
 
@@ -81,12 +81,12 @@ export default function Hero() {
               <input
                 type="text"
                 placeholder="Search events, artists, venues..."
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-[#0c2230] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#00d26a]/50 focus:ring-1 focus:ring-[#00d26a]/30 transition-all text-sm"
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-[#112240] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#ff5a5f]/50 focus:ring-1 focus:ring-[#ff5a5f]/30 transition-all text-sm"
               />
             </div>
             <Link
               href="/explore"
-              className="btn-scale flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 hover:shadow-xl hover:shadow-[#00d26a]/25 transition-all duration-200 whitespace-nowrap"
+              className="btn-scale flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm hover:bg-[#ff5a5f]/90 hover:shadow-xl hover:shadow-[#ff5a5f]/25 transition-all duration-200 whitespace-nowrap"
             >
               Explore Events
               <ArrowRight className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function Hero() {
               { value: "4.9★", label: "Avg. Rating" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col">
-                <span className="text-2xl font-extrabold text-[#00d26a]">
+                <span className="text-2xl font-extrabold text-[#ff5a5f]">
                   {stat.value}
                 </span>
                 <span className="text-white/50 text-sm">{stat.label}</span>
@@ -122,12 +122,12 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.5 }}
           className="hidden xl:block flex-shrink-0 w-72"
         >
-          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 bg-[#0c2230]">
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 bg-[#112240]">
             {/* Card header */}
             <div className="px-5 pt-5 pb-4 border-b border-white/8">
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 rounded-lg bg-[#00d26a]/15 flex items-center justify-center">
-                  <Ticket className="w-3.5 h-3.5 text-[#00d26a]" />
+                <div className="w-7 h-7 rounded-lg bg-[#ff5a5f]/15 flex items-center justify-center">
+                  <Ticket className="w-3.5 h-3.5 text-[#ff5a5f]" />
                 </div>
                 <span className="text-white/50 text-xs font-medium">Quick Booking</span>
               </div>
@@ -143,7 +143,7 @@ export default function Hero() {
               <div className="flex items-center justify-between bg-[#060f17] rounded-xl p-1">
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="w-9 h-9 rounded-lg bg-[#0c2230] text-white flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="w-9 h-9 rounded-lg bg-[#112240] text-white flex items-center justify-center hover:bg-white/10 transition-colors"
                   style={{ transform: "none" }} /* override global scale — it's too small */
                 >
                   <Minus className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function Hero() {
                 <span className="text-white font-extrabold text-xl">{qty}</span>
                 <button
                   onClick={() => setQty((q) => Math.min(10, q + 1))}
-                  className="w-9 h-9 rounded-lg bg-[#00d26a]/20 text-[#00d26a] flex items-center justify-center hover:bg-[#00d26a]/35 transition-colors"
+                  className="w-9 h-9 rounded-lg bg-[#ff5a5f]/20 text-[#ff5a5f] flex items-center justify-center hover:bg-[#ff5a5f]/35 transition-colors"
                   style={{ transform: "none" }}
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ export default function Hero() {
                 <span className="text-white/40 text-xs">
                   ${PRICE} × {qty} tickets
                 </span>
-                <span className="text-[#00d26a] font-extrabold text-base">
+                <span className="text-[#ff5a5f] font-extrabold text-base">
                   ${total}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export default function Hero() {
             <div className="px-5 py-4 border-b border-white/8">
               <Link
                 href={`/checkout?eventId=1&qty=${qty}`}
-                className="btn-scale block w-full text-center py-3 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 transition-all"
+                className="btn-scale block w-full text-center py-3 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm hover:bg-[#ff5a5f]/90 transition-all"
               >
                 Get Tickets
               </Link>

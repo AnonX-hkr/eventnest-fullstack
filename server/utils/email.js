@@ -62,7 +62,7 @@ function buildTicketEmail({ order, tickets, event, buyerName }) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Tickets — EventBookings</title>
+  <title>Your Tickets — EventNest</title>
 </head>
 <body style="margin:0;padding:0;background:#060f17;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
@@ -74,7 +74,7 @@ function buildTicketEmail({ order, tickets, event, buyerName }) {
           <span style="color:#0c2230;font-size:20px;font-weight:bold;">🎫</span>
         </div>
         <span style="color:#ffffff;font-size:20px;font-weight:800;letter-spacing:-0.5px;">
-          Event<span style="color:#00d26a;">Bookings</span>
+          Event<span style="color:#00d26a;">Nest</span>
         </span>
       </div>
     </div>
@@ -134,7 +134,7 @@ function buildTicketEmail({ order, tickets, event, buyerName }) {
 
     <!-- Footer -->
     <p style="color:rgba(255,255,255,0.2);font-size:12px;text-align:center;margin:0;">
-      EventBookings · Questions? Reply to this email.
+      EventNest · Questions? Reply to this email.
     </p>
   </div>
 </body>
@@ -149,7 +149,7 @@ async function sendTicketEmail({ to, order, tickets, event, buyerName }) {
     const html = buildTicketEmail({ order, tickets, event, buyerName });
 
     const info = await transporter.sendMail({
-      from: `"EventBookings" <${process.env.SMTP_FROM || process.env.SMTP_USER || "tickets@eventbookings.dev"}>`,
+      from: `"EventNest" <${process.env.SMTP_FROM || process.env.SMTP_USER || "tickets@eventnest.dev"}>`,
       to,
       subject: `🎫 Your tickets for ${event.title ?? "the event"} — Order ${order.orderNumber}`,
       html,

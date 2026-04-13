@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 const signAccessToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
     expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
-    issuer: "eventbookings-api",
-    audience: "eventbookings-client",
+    issuer: "eventnest-api",
+    audience: "eventnest-client",
   });
 };
 
@@ -17,8 +17,8 @@ const signAccessToken = (payload) => {
 const signRefreshToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
-    issuer: "eventbookings-api",
-    audience: "eventbookings-client",
+    issuer: "eventnest-api",
+    audience: "eventnest-client",
   });
 };
 
@@ -27,8 +27,8 @@ const signRefreshToken = (payload) => {
  */
 const verifyAccessToken = (token) => {
   return jwt.verify(token, process.env.JWT_ACCESS_SECRET, {
-    issuer: "eventbookings-api",
-    audience: "eventbookings-client",
+    issuer: "eventnest-api",
+    audience: "eventnest-client",
   });
 };
 
@@ -37,8 +37,8 @@ const verifyAccessToken = (token) => {
  */
 const verifyRefreshToken = (token) => {
   return jwt.verify(token, process.env.JWT_REFRESH_SECRET, {
-    issuer: "eventbookings-api",
-    audience: "eventbookings-client",
+    issuer: "eventnest-api",
+    audience: "eventnest-client",
   });
 };
 

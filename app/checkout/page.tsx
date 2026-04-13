@@ -149,14 +149,14 @@ function CheckoutForm() {
         transition={{ duration: 0.45 }}
         className="max-w-xl mx-auto"
       >
-        <div className="rounded-3xl bg-[#0d1f2d] border border-[#00d26a]/25 p-8 shadow-2xl">
+        <div className="rounded-3xl bg-[#112240] border border-[#ff5a5f]/25 p-8 shadow-2xl">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 220, delay: 0.15 }}
-            className="w-20 h-20 rounded-full bg-[#00d26a]/15 flex items-center justify-center mx-auto mb-6"
+            className="w-20 h-20 rounded-full bg-[#ff5a5f]/15 flex items-center justify-center mx-auto mb-6"
           >
-            <CheckCircle className="w-10 h-10 text-[#00d26a]" />
+            <CheckCircle className="w-10 h-10 text-[#ff5a5f]" />
           </motion.div>
 
           <h2 className="text-2xl font-extrabold text-white text-center mb-1">
@@ -188,7 +188,7 @@ function CheckoutForm() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#00d26a] font-mono text-sm font-bold mb-1">
+                    <p className="text-[#ff5a5f] font-mono text-sm font-bold mb-1">
                       {ticket.ticketCode}
                     </p>
                     <p className="text-white font-semibold text-sm truncate">
@@ -197,7 +197,7 @@ function CheckoutForm() {
                     <p className="text-white/40 text-xs mt-1">
                       {form.name} · {form.email}
                     </p>
-                    <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-[#00d26a]/10 text-[#00d26a] text-xs font-semibold">
+                    <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-[#ff5a5f]/10 text-[#ff5a5f] text-xs font-semibold">
                       Valid
                     </span>
                   </div>
@@ -209,7 +209,7 @@ function CheckoutForm() {
           <div className="flex flex-col gap-3">
             <Link
               href="/tickets"
-              className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 transition-all"
+              className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#ff5a5f] text-[white] font-bold text-sm hover:bg-[#ff5a5f]/90 transition-all"
             >
               <QrCode className="w-4 h-4" />
               View All My Tickets
@@ -230,7 +230,7 @@ function CheckoutForm() {
   if (authLoading || eventLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
       </div>
     );
   }
@@ -239,7 +239,7 @@ function CheckoutForm() {
     return (
       <div className="text-center py-20">
         <p className="text-white/50">Event not found.</p>
-        <Link href="/explore" className="text-[#00d26a] text-sm mt-2 inline-block hover:underline">
+        <Link href="/explore" className="text-[#ff5a5f] text-sm mt-2 inline-block hover:underline">
           Browse events
         </Link>
       </div>
@@ -281,10 +281,10 @@ function CheckoutForm() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6"
+            className="rounded-2xl bg-[#112240] border border-white/8 p-6"
           >
             <h2 className="text-white font-semibold mb-5 flex items-center gap-2">
-              <User className="w-4 h-4 text-[#00d26a]" />
+              <User className="w-4 h-4 text-[#ff5a5f]" />
               Personal Information
             </h2>
 
@@ -307,7 +307,7 @@ function CheckoutForm() {
                   className={`w-full px-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all ${
                     errors[key]
                       ? "border-red-500/50 focus:border-red-400"
-                      : "border-white/10 focus:border-[#00d26a]/50"
+                      : "border-white/10 focus:border-[#ff5a5f]/50"
                   }`}
                 />
                 {errors[key] && <p className="text-red-400 text-xs mt-1">{errors[key]}</p>}
@@ -321,18 +321,18 @@ function CheckoutForm() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.08 }}
-              className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6"
+              className="rounded-2xl bg-[#112240] border border-white/8 p-6"
             >
               <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <Tag className="w-4 h-4 text-[#00d26a]" />
+                <Tag className="w-4 h-4 text-[#ff5a5f]" />
                 Promo Code
               </h2>
 
               {promoResult ? (
-                <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#00d26a]/8 border border-[#00d26a]/25">
+                <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#ff5a5f]/8 border border-[#ff5a5f]/25">
                   <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#00d26a]" />
-                    <span className="text-[#00d26a] font-mono font-bold text-sm">{promoResult.code}</span>
+                    <Check className="w-4 h-4 text-[#ff5a5f]" />
+                    <span className="text-[#ff5a5f] font-mono font-bold text-sm">{promoResult.code}</span>
                     <span className="text-white/50 text-xs">
                       — {promoResult.discountType === "percent"
                         ? `${promoResult.discountValue}% off`
@@ -355,7 +355,7 @@ function CheckoutForm() {
                     onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(""); }}
                     placeholder="Enter promo code"
                     className={`flex-1 px-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm font-mono focus:outline-none transition-all ${
-                      promoError ? "border-red-500/50" : "border-white/10 focus:border-[#00d26a]/50"
+                      promoError ? "border-red-500/50" : "border-white/10 focus:border-[#ff5a5f]/50"
                     }`}
                   />
                   <button
@@ -381,7 +381,7 @@ function CheckoutForm() {
                         setPromoError(extractError(res));
                       }
                     }}
-                    className="px-5 py-3 rounded-xl bg-[#00d26a]/15 border border-[#00d26a]/25 text-[#00d26a] font-semibold text-sm hover:bg-[#00d26a]/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                    className="px-5 py-3 rounded-xl bg-[#ff5a5f]/15 border border-[#ff5a5f]/25 text-[#ff5a5f] font-semibold text-sm hover:bg-[#ff5a5f]/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
                   >
                     {promoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
                   </button>
@@ -396,10 +396,10 @@ function CheckoutForm() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6"
+            className="rounded-2xl bg-[#112240] border border-white/8 p-6"
           >
             <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <Lock className="w-4 h-4 text-[#00d26a]" />
+              <Lock className="w-4 h-4 text-[#ff5a5f]" />
               Payment
             </h2>
 
@@ -422,10 +422,10 @@ function CheckoutForm() {
                 </div>
               </div>
             ) : total === 0 ? (
-              <div className="rounded-xl bg-[#00d26a]/5 border border-[#00d26a]/15 p-4 flex items-center gap-3">
-                <Zap className="w-4 h-4 text-[#00d26a]" />
+              <div className="rounded-xl bg-[#ff5a5f]/5 border border-[#ff5a5f]/15 p-4 flex items-center gap-3">
+                <Zap className="w-4 h-4 text-[#ff5a5f]" />
                 <div>
-                  <p className="text-[#00d26a] text-sm font-semibold">Free Event</p>
+                  <p className="text-[#ff5a5f] text-sm font-semibold">Free Event</p>
                   <p className="text-white/40 text-xs">No payment required — confirm to get your ticket</p>
                 </div>
               </div>
@@ -443,7 +443,7 @@ function CheckoutForm() {
             transition={{ duration: 0.4, delay: 0.2 }}
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm
+            className="w-full py-4 rounded-xl bg-[#ff5a5f] text-[white] font-bold text-sm
               shadow-[0_0_20px_rgba(0,210,106,0.3)] hover:shadow-[0_0_30px_rgba(0,210,106,0.45)]
               disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
@@ -472,11 +472,11 @@ function CheckoutForm() {
           transition={{ duration: 0.4, delay: 0.15 }}
           className="lg:w-72 flex-shrink-0"
         >
-          <div className="rounded-2xl bg-[#0d1f2d] border border-white/8 overflow-hidden sticky top-24">
+          <div className="rounded-2xl bg-[#112240] border border-white/8 overflow-hidden sticky top-24">
             {event.coverImage && (
               <div className="h-32 overflow-hidden relative">
                 <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f2d] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#112240] to-transparent" />
               </div>
             )}
             <div className="p-5">
@@ -501,7 +501,7 @@ function CheckoutForm() {
                       <span className="text-white">${fee.toFixed(2)}</span>
                     </div>
                     {promoResult && (
-                      <div className="flex justify-between text-[#00d26a]">
+                      <div className="flex justify-between text-[#ff5a5f]">
                         <span className="flex items-center gap-1">
                           <Tag className="w-3 h-3" />
                           {promoResult.code}
@@ -513,7 +513,7 @@ function CheckoutForm() {
                 ) : null}
                 <div className="flex justify-between font-bold border-t border-white/8 pt-2.5 mt-1">
                   <span className="text-white">Total</span>
-                  <span className="text-[#00d26a] text-base">
+                  <span className="text-[#ff5a5f] text-base">
                     {total === 0 ? "Free" : `$${total.toFixed(2)}`}
                   </span>
                 </div>
@@ -538,7 +538,7 @@ export default function CheckoutPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <Suspense fallback={
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
         </div>
       }>
         <CheckoutForm />

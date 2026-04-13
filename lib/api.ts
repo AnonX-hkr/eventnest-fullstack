@@ -1,5 +1,5 @@
 /**
- * EventBookings API client
+ * EventNest API client
  *
  * Key design decisions
  * ────────────────────
@@ -69,12 +69,13 @@ export interface ApiEvent {
   description: string;
   category: string;
   tags: string[];
-  organizer: { _id: string; name: string; avatar: string | null };
+  organizer: { _id: string; name: string; avatar: string | null } | string;
   startDate: string;
   endDate: string;
   timezone: string;
-  venue: { name: string; address: string; city: string; country: string };
+  venue: { name: string; address: string; city: string; country: string; state?: string };
   isOnline: boolean;
+  onlineLink?: string;
   coverImage: string;
   status: "draft" | "published" | "cancelled" | "completed";
   isFeatured: boolean;
@@ -94,8 +95,10 @@ export interface TicketTier {
   quantity: number;
   sold?: number;
   maxPerOrder?: number;
+  minPerOrder?: number;
   saleStartsAt?: string;
   saleEndsAt?: string;
+  isVisible?: boolean;
 }
 
 export interface PaginationMeta {
@@ -327,6 +330,11 @@ export const eventApi = {
 
   delete: (id: string, token: string) =>
     request(`/events/${id}`, { method: "DELETE" }, token),
+
+  suggest: (q: string) =>
+    request<{ suggestions: { _id: string; title: string; category: string; venue: { city: string }; slug: string }[] }>(
+      `/events/suggest?q=${encodeURIComponent(q)}`
+    ),
 
   myEvents: (
     params: { status?: string; page?: number } = {},

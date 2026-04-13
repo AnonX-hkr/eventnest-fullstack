@@ -1,72 +1,114 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0c2230;
-  --foreground: #f0f4f8;
-  --navy: #0c2230;
-  --green: #00d26a;
+  /* ── Dark palette (dashboard, app screens) ─────────── */
+  --bg-base:    #0a1628;
+  --bg-card:    #112240;
+  --bg-surface: #0d1d36;
+  --navy:       #1a2b4b;
+  --coral:      #ff5a5f;
+  --coral-soft: rgba(255, 90, 95, 0.12);
+  --coral-glow: rgba(255, 90, 95, 0.35);
+
+  /* ── Brand green (eventbookings.com style) ───────── */
+  --eb-green:       #00d26a;
+  --eb-green-hover: #00be60;
+  --eb-green-glow:  rgba(0, 210, 106, 0.28);
+
+  /* ── Light palette (landing, public pages) ────────── */
+  --light-bg:      #ffffff;
+  --light-surface: #f8fafc;
+  --light-text:    #1a2332;
+  --light-muted:   #5a6578;
+  --light-border:  #e5e7eb;
+
+  /* ── Base aliases (dark by default for app pages) ── */
+  --background: var(--bg-base);
+  --foreground: #f0f6ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-navy: var(--navy);
-  --color-green: var(--green);
+  --color-coral: var(--coral);
 }
 
 body {
-  background: var(--background);
+  background: var(--bg-base);
   color: var(--foreground);
   font-family: var(--font-inter), 'Inter', 'Segoe UI', Arial, Helvetica, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-* {
-  box-sizing: border-box;
-}
+html { scroll-behavior: smooth; }
+* { box-sizing: border-box; }
 
 /* ─── Heading defaults ─── */
 h1, h2, h3, h4, h5 {
-  letter-spacing: -0.025em; /* tracking-tight */
+  letter-spacing: -0.025em;
   font-weight: 700;
 }
 
-/* ─── Global button hover scale ─── */
-.btn-scale {
+/* ─── Brand-aware button scale ─── */
+.btn-scale { transition: all 0.2s ease; }
+.btn-scale:hover { transform: scale(1.04); }
+
+/* ─── Coral CTA button ─── */
+.btn-coral {
+  background: var(--coral);
+  color: #fff;
+  font-weight: 700;
   transition: all 0.2s ease;
+  box-shadow: 0 0 20px var(--coral-glow);
 }
-.btn-scale:hover {
-  transform: scale(1.05);
+.btn-coral:hover {
+  background: #ff3d42;
+  box-shadow: 0 0 32px var(--coral-glow);
+  transform: translateY(-1px);
 }
 
-/* ─── Shimmer animation for skeleton loaders ─── */
+/* ─── Green CTA button (eventbookings.com style) ─── */
+.btn-green {
+  background: var(--eb-green);
+  color: #fff;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 16px var(--eb-green-glow);
+  border-radius: 8px;
+}
+.btn-green:hover {
+  background: var(--eb-green-hover);
+  box-shadow: 0 0 28px var(--eb-green-glow);
+  transform: translateY(-1px);
+}
+
+/* ─── Shimmer for skeleton loaders ─── */
 @keyframes shimmer {
   0%   { background-position: -600px 0; }
   100% { background-position: 600px 0; }
 }
-
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.09) 50%,
-    rgba(255, 255, 255, 0.04) 75%
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 75%
   );
   background-size: 600px 100%;
   animation: shimmer 1.8s infinite linear;
 }
 
-/* ─── Gradient border utility ─── */
+/* ─── Coral gradient border utility ─── */
 .gradient-border {
-  background: linear-gradient(#0d1f2d, #0d1f2d) padding-box,
-              linear-gradient(135deg, rgba(0,210,106,0.4) 0%, rgba(0,210,106,0.05) 100%) border-box;
+  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+              linear-gradient(135deg, rgba(255,90,95,0.4) 0%, rgba(255,90,95,0.05) 100%) border-box;
   border: 1px solid transparent;
 }
 
 /* ─── Glow text ─── */
+.text-glow-coral {
+  text-shadow: 0 0 24px rgba(255, 90, 95, 0.45);
+}
 .text-glow-green {
   text-shadow: 0 0 20px rgba(0, 210, 106, 0.4);
 }
@@ -76,24 +118,76 @@ h1, h2, h3, h4, h5 {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Light card hover (for landing page) ─── */
+.card-hover-light {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.card-hover-light:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
 }
 
 /* ─── Scrollbars ─── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0c2230;
-}
-::-webkit-scrollbar-thumb {
-  background: #00d26a;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--coral); border-radius: 3px; }
 
 /* ─── Hide scrollbar on pill rows ─── */
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ─── Category icon grid (homepage) ─── */
+.cat-card {
+  transition: all 0.22s ease;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.cat-card:hover {
+  border-color: var(--coral);
+  background: var(--coral-soft);
+  transform: translateY(-2px);
+}
+.cat-card:hover .cat-icon { color: var(--coral); }
+
+/* ─── Tab underline active ─── */
+.tab-active {
+  border-bottom: 2px solid var(--coral);
+  color: var(--coral);
+}
+
+/* ─── Star rating utility ─── */
+.star-filled { color: #f59e0b; }
+.star-half   { color: #f59e0b; opacity: 0.5; }
+
+/* ─── Light page gradient backgrounds ─── */
+.gradient-soft {
+  background: linear-gradient(135deg, #f0e6ff 0%, #e0f7ef 40%, #fef9e7 100%);
+}
+
+/* ─── Hero image grid animations ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.float-anim {
+  animation: float 4s ease-in-out infinite;
+}
+.float-anim-delayed {
+  animation: float 4s ease-in-out 1s infinite;
+}
+
+/* ─── Feature card light ─── */
+.feature-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.25s ease;
+}
+.feature-card:hover {
+  border-color: var(--eb-green);
+  box-shadow: 0 8px 32px rgba(0, 210, 106, 0.08);
+  transform: translateY(-3px);
 }

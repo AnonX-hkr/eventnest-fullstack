@@ -1,4 +1,4 @@
-# EventBookings — Client Handover Guide
+# EventNest — Client Handover Guide
 
 This guide covers everything you need to run your platform day-to-day: creating events, managing tickets, scanning at the door, and understanding what happens when something goes wrong.
 
@@ -165,7 +165,7 @@ SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=you@gmail.com
 SMTP_PASS=your-16-char-app-password
-SMTP_FROM=EventBookings <no-reply@yourdomain.com>
+SMTP_FROM=EventNest <no-reply@yourdomain.com>
 ```
 
 Generate a Gmail App Password at: **Google Account → Security → 2-Step Verification → App Passwords**

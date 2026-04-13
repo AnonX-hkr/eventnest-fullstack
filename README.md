@@ -1,4 +1,4 @@
-# EventBookings
+# EventNest
 
 A full-stack event ticketing platform. Organizers create and publish events; attendees discover, book, and receive QR-coded tickets by email. Staff scan tickets at the door.
 
@@ -131,7 +131,7 @@ The Next.js dev server proxies `/api/*` → `http://localhost:5000/api/*` automa
 | `SMTP_SECURE` | No | `false` (TLS via STARTTLS). Set `true` for port 465. |
 | `SMTP_USER` | No | SMTP username / Gmail address |
 | `SMTP_PASS` | No | SMTP password / Gmail App Password |
-| `SMTP_FROM` | No | `EventBookings <tickets@yourdomain.com>` |
+| `SMTP_FROM` | No | `EventNest <tickets@yourdomain.com>` |
 | `RATE_LIMIT_WINDOW_MS` | No | `900000` (15 min) |
 | `RATE_LIMIT_MAX` | No | `100` requests per window |
 

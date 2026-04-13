@@ -53,7 +53,7 @@ function LoginForm() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16 bg-[#060f17]">
       {/* Background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#00d26a]/6 blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#ff5a5f]/6 blur-[100px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
@@ -62,19 +62,19 @@ function LoginForm() {
         className="relative z-10 w-full max-w-md"
       >
         {/* Card */}
-        <div className="rounded-3xl bg-[#0d1f2d] border border-white/8 overflow-hidden shadow-2xl shadow-black/50">
+        <div className="rounded-3xl bg-[#112240] border border-white/8 overflow-hidden shadow-2xl shadow-black/50">
           {/* Header */}
           <div className="px-8 pt-8 pb-6 border-b border-white/6">
             <Link href="/" className="flex items-center gap-2 w-fit mb-6">
               <motion.div
                 whileHover={{ scale: 1.1, rotate: -5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="w-8 h-8 rounded-lg bg-[#00d26a] flex items-center justify-center shadow-[0_0_14px_rgba(0,210,106,0.4)]"
+                className="w-8 h-8 rounded-lg bg-[#ff5a5f] flex items-center justify-center shadow-[0_0_14px_rgba(255,90,95,0.4)]"
               >
-                <Ticket className="w-5 h-5 text-[#0c2230]" />
+                <Ticket className="w-5 h-5 text-white" />
               </motion.div>
               <span className="text-white font-bold text-lg tracking-tight">
-                Event<span className="text-[#00d26a]">Bookings</span>
+                Event<span className="text-[#ff5a5f]">Nest</span>
               </span>
             </Link>
             <h1 className="text-2xl font-extrabold tracking-tight text-white mb-1">
@@ -109,7 +109,7 @@ function LoginForm() {
               </label>
               <div className="relative">
                 <motion.div
-                  animate={{ color: focused === "email" ? "#00d26a" : "rgba(255,255,255,0.3)" }}
+                  animate={{ color: focused === "email" ? "#ff5a5f" : "rgba(255,255,255,0.3)" }}
                   transition={{ duration: 0.2 }}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
@@ -125,8 +125,8 @@ function LoginForm() {
                   autoComplete="email"
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all duration-200"
                   style={{
-                    borderColor: focused === "email" ? "rgba(0,210,106,0.5)" : "rgba(255,255,255,0.1)",
-                    boxShadow: focused === "email" ? "0 0 0 3px rgba(0,210,106,0.08)" : "none",
+                    borderColor: focused === "email" ? "rgba(255,90,95,0.5)" : "rgba(255,255,255,0.1)",
+                    boxShadow: focused === "email" ? "0 0 0 3px rgba(255,90,95,0.08)" : "none",
                   }}
                 />
               </div>
@@ -136,13 +136,13 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-white/55 text-xs font-medium">Password</label>
-                <Link href="#" className="text-[#00d26a] text-xs hover:underline">
+                <Link href="#" className="text-[#ff5a5f] text-xs hover:underline">
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
                 <motion.div
-                  animate={{ color: focused === "password" ? "#00d26a" : "rgba(255,255,255,0.3)" }}
+                  animate={{ color: focused === "password" ? "#ff5a5f" : "rgba(255,255,255,0.3)" }}
                   transition={{ duration: 0.2 }}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
@@ -158,8 +158,8 @@ function LoginForm() {
                   autoComplete="current-password"
                   className="w-full pl-10 pr-11 py-3 rounded-xl bg-[#060f17] border text-white placeholder-white/20 text-sm focus:outline-none transition-all duration-200"
                   style={{
-                    borderColor: focused === "password" ? "rgba(0,210,106,0.5)" : "rgba(255,255,255,0.1)",
-                    boxShadow: focused === "password" ? "0 0 0 3px rgba(0,210,106,0.08)" : "none",
+                    borderColor: focused === "password" ? "rgba(255,90,95,0.5)" : "rgba(255,255,255,0.1)",
+                    boxShadow: focused === "password" ? "0 0 0 3px rgba(255,90,95,0.08)" : "none",
                   }}
                 />
                 <motion.button
@@ -181,9 +181,9 @@ function LoginForm() {
               whileHover={!loading ? { scale: 1.015 } : {}}
               whileTap={!loading ? { scale: 0.975 } : {}}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm
-                shadow-[0_0_18px_rgba(0,210,106,0.35)]
-                hover:shadow-[0_0_28px_rgba(0,210,106,0.5)]
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm
+                shadow-[0_0_18px_rgba(255,90,95,0.35)]
+                hover:shadow-[0_0_28px_rgba(255,90,95,0.5)]
                 disabled:opacity-60 disabled:cursor-not-allowed
                 transition-shadow duration-200 mt-2"
             >
@@ -204,7 +204,7 @@ function LoginForm() {
               Don&apos;t have an account?{" "}
               <Link
                 href={`/signup${redirect !== "/" ? `?redirect=${redirect}` : ""}`}
-                className="text-[#00d26a] font-medium hover:underline"
+                className="text-[#ff5a5f] font-medium hover:underline"
               >
                 Create one free
               </Link>
@@ -217,7 +217,7 @@ function LoginForm() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 px-4 py-3 rounded-2xl bg-[#0d1f2d]/60 border border-white/6 text-center"
+          className="mt-4 px-4 py-3 rounded-2xl bg-[#112240]/60 border border-white/6 text-center"
         >
           <p className="text-white/30 text-xs">
             New here? Sign up first — backend runs on{" "}
@@ -233,7 +233,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
       </div>
     }>
       <LoginForm />

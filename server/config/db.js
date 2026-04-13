@@ -10,7 +10,7 @@ const connectDB = async () => {
   if (isConnected) return;
 
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       family: 4,   // force IPv4 — avoids IPv6 DNS issues on Windows

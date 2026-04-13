@@ -20,7 +20,7 @@ export default function DashboardSkeleton() {
       {/* Metric cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-2xl bg-[#0d1f2d] border border-white/6 p-6">
+          <div key={i} className="rounded-2xl bg-[#112240] border border-white/6 p-6">
             <div className="flex items-start justify-between mb-5">
               <div className="w-11 h-11 rounded-xl skeleton-shimmer" />
               <div className="w-4 h-4 rounded skeleton-shimmer" />
@@ -34,7 +34,7 @@ export default function DashboardSkeleton() {
       {/* Chart + Quick actions row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Chart */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#0d1f2d] border border-white/6 overflow-hidden">
+        <div className="lg:col-span-2 rounded-2xl bg-[#112240] border border-white/6 overflow-hidden">
           <div className="px-6 py-4 border-b border-white/6 flex items-center justify-between">
             <div>
               <div className="h-4 w-44 rounded skeleton-shimmer mb-1.5" />
@@ -59,7 +59,7 @@ export default function DashboardSkeleton() {
         </div>
 
         {/* Quick actions */}
-        <div className="rounded-2xl bg-[#0d1f2d] border border-white/6 overflow-hidden">
+        <div className="rounded-2xl bg-[#112240] border border-white/6 overflow-hidden">
           <div className="px-6 py-4 border-b border-white/6">
             <div className="h-4 w-28 rounded skeleton-shimmer" />
           </div>
@@ -76,7 +76,7 @@ export default function DashboardSkeleton() {
       </div>
 
       {/* Recent orders table */}
-      <div className="rounded-2xl bg-[#0d1f2d] border border-white/6 overflow-hidden">
+      <div className="rounded-2xl bg-[#112240] border border-white/6 overflow-hidden">
         <div className="px-6 py-4 border-b border-white/6 flex items-center justify-between">
           <div className="h-4 w-28 rounded skeleton-shimmer" />
           <div className="h-3 w-16 rounded skeleton-shimmer" />

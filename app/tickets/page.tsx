@@ -16,7 +16,7 @@ import { FadeIn, StaggeredList, staggerChild } from "@/components/animations";
 // ─── Status config ────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-  valid:       { label: "Valid",       color: "text-[#00d26a]",  bg: "bg-[#00d26a]/10",  border: "border-[#00d26a]/20", icon: CheckCircle2, glow: "rgba(0,210,106,0.15)" },
+  valid:       { label: "Valid",       color: "text-[#ff5a5f]",  bg: "bg-[#ff5a5f]/10",  border: "border-[#ff5a5f]/20", icon: CheckCircle2, glow: "rgba(255,90,95,0.15)" },
   used:        { label: "Used",        color: "text-white/40",   bg: "bg-white/6",        border: "border-white/10",     icon: CheckCircle2, glow: "transparent" },
   cancelled:   { label: "Cancelled",   color: "text-red-400",    bg: "bg-red-500/10",     border: "border-red-500/20",   icon: XCircle,      glow: "rgba(239,68,68,0.08)" },
   refunded:    { label: "Refunded",    color: "text-amber-400",  bg: "bg-amber-500/10",   border: "border-amber-500/20", icon: XCircle,      glow: "rgba(245,158,11,0.08)" },
@@ -84,11 +84,11 @@ function TicketCard({ ticket, index }: { ticket: ApiTicket; index: number }) {
     >
       {/* Perspective wrapper */}
       <div style={{ perspective: "1000px" }}>
-        <TiltCard className="rounded-2xl overflow-hidden bg-[#0d1f2d] border border-white/8 hover:border-white/18 transition-colors shadow-lg">
+        <TiltCard className="rounded-2xl overflow-hidden bg-[#112240] border border-white/8 hover:border-white/18 transition-colors shadow-lg">
 
           {/* Colored accent line for valid tickets */}
           {isValid && (
-            <div className="h-0.5 w-full bg-gradient-to-r from-[#00d26a]/0 via-[#00d26a]/70 to-[#00d26a]/0" />
+            <div className="h-0.5 w-full bg-gradient-to-r from-[#ff5a5f]/0 via-[#ff5a5f]/70 to-[#ff5a5f]/0" />
           )}
 
           {/* Top bar */}
@@ -98,9 +98,9 @@ function TicketCard({ ticket, index }: { ticket: ApiTicket; index: number }) {
                 initial={{ scale: 0, rotate: -15 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 300, delay: 0.1 + index * 0.05 }}
-                className={`w-9 h-9 rounded-xl ${isValid ? "bg-[#00d26a]/12" : "bg-white/6"} flex items-center justify-center flex-shrink-0`}
+                className={`w-9 h-9 rounded-xl ${isValid ? "bg-[#ff5a5f]/12" : "bg-white/6"} flex items-center justify-center flex-shrink-0`}
               >
-                <Ticket className={`w-4 h-4 ${isValid ? "text-[#00d26a]" : "text-white/30"}`} />
+                <Ticket className={`w-4 h-4 ${isValid ? "text-[#ff5a5f]" : "text-white/30"}`} />
               </motion.div>
               <div>
                 <p className="text-white font-bold text-sm line-clamp-1">
@@ -142,7 +142,7 @@ function TicketCard({ ticket, index }: { ticket: ApiTicket; index: number }) {
                   {/* Scan pulse ring (valid only) */}
                   {isValid && qrLoaded && (
                     <motion.div
-                      className="absolute inset-0 rounded-xl border-2 border-[#00d26a]/30"
+                      className="absolute inset-0 rounded-xl border-2 border-[#ff5a5f]/30"
                       animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                     />
@@ -171,12 +171,12 @@ function TicketCard({ ticket, index }: { ticket: ApiTicket; index: number }) {
 
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-white/45 text-xs">
-                  <Calendar className="w-3.5 h-3.5 flex-shrink-0 text-[#00d26a]/60" />
+                  <Calendar className="w-3.5 h-3.5 flex-shrink-0 text-[#ff5a5f]/60" />
                   <span>{eventDate}</span>
                 </div>
                 {ticket.event?.venue && (
                   <div className="flex items-center gap-1.5 text-white/45 text-xs">
-                    <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-[#00d26a]/60" />
+                    <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-[#ff5a5f]/60" />
                     <span className="truncate">
                       {ticket.event.venue.name}{ticket.event.venue.city ? `, ${ticket.event.venue.city}` : ""}
                     </span>
@@ -252,13 +252,13 @@ function FilterPill({
       whileTap={{ scale: 0.96 }}
       className={`relative px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
         active
-          ? "bg-[#00d26a] text-[#0c2230]"
+          ? "bg-[#ff5a5f] text-white"
           : "bg-white/8 text-white/50 hover:text-white hover:bg-white/12"
       }`}
     >
       {label}
       {count != null && count > 0 && (
-        <span className={`ml-1.5 text-[10px] font-bold ${active ? "text-[#0c2230]/60" : "text-white/30"}`}>
+        <span className={`ml-1.5 text-[10px] font-bold ${active ? "text-white/60" : "text-white/30"}`}>
           {count}
         </span>
       )}
@@ -298,7 +298,7 @@ export default function MyTicketsPage() {
         <h1 className="text-3xl font-extrabold text-white tracking-tight mb-1">My Tickets</h1>
         <p className="text-white/40 text-sm">
           {tickets.length} ticket{tickets.length !== 1 ? "s" : ""}
-          {validCount > 0 && <> · <span className="text-[#00d26a]">{validCount} valid</span></>}
+          {validCount > 0 && <> · <span className="text-[#ff5a5f]">{validCount} valid</span></>}
           {usedCount > 0 && ` · ${usedCount} used`}
         </p>
       </FadeIn>
@@ -340,7 +340,7 @@ export default function MyTicketsPage() {
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href="/explore"
-                className="inline-block px-6 py-2.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm hover:bg-[#00d26a]/90 shadow-[0_0_20px_rgba(0,210,106,0.3)] transition-all"
+                className="inline-block px-6 py-2.5 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm hover:bg-[#ff5a5f]/90 shadow-[0_0_20px_rgba(255,90,95,0.3)] transition-all"
               >
                 Browse Events
               </Link>

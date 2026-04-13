@@ -130,7 +130,7 @@ export default function ScanPage() {
 
   if (authLoading) return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <Loader2 className="w-8 h-8 text-[#00d26a] animate-spin" />
+      <Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" />
     </div>
   );
 
@@ -145,11 +145,11 @@ export default function ScanPage() {
         className="mb-8 text-center"
       >
         <motion.div
-          animate={{ boxShadow: scanning ? "0 0 0 8px rgba(0,210,106,0.12), 0 0 0 16px rgba(0,210,106,0.05)" : "none" }}
+          animate={{ boxShadow: scanning ? "0 0 0 8px rgba(255,90,95,0.12), 0 0 0 16px rgba(255,90,95,0.05)" : "none" }}
           transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-          className="w-16 h-16 rounded-2xl bg-[#00d26a]/10 border border-[#00d26a]/20 flex items-center justify-center mx-auto mb-4"
+          className="w-16 h-16 rounded-2xl bg-[#ff5a5f]/10 border border-[#ff5a5f]/20 flex items-center justify-center mx-auto mb-4"
         >
-          <ScanLine className="w-8 h-8 text-[#00d26a]" />
+          <ScanLine className="w-8 h-8 text-[#ff5a5f]" />
         </motion.div>
         <h1 className="text-2xl font-extrabold text-white mb-1 tracking-tight">Ticket Scanner</h1>
         <p className="text-white/40 text-sm">Scan QR code or enter ticket code manually</p>
@@ -169,7 +169,7 @@ export default function ScanPage() {
             whileTap={{ scale: 0.97 }}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors relative overflow-hidden ${
               mode === "camera"
-                ? "bg-[#00d26a] text-[#0c2230] shadow-[0_0_16px_rgba(0,210,106,0.3)]"
+                ? "bg-[#ff5a5f] text-white shadow-[0_0_16px_rgba(255,90,95,0.3)]"
                 : "bg-white/8 text-white/50 hover:text-white hover:bg-white/12"
             }`}
           >
@@ -183,7 +183,7 @@ export default function ScanPage() {
           whileTap={{ scale: 0.97 }}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors ${
             mode === "manual"
-              ? "bg-[#00d26a] text-[#0c2230] shadow-[0_0_16px_rgba(0,210,106,0.3)]"
+              ? "bg-[#ff5a5f] text-white shadow-[0_0_16px_rgba(255,90,95,0.3)]"
               : "bg-white/8 text-white/50 hover:text-white hover:bg-white/12"
           }`}
         >
@@ -222,20 +222,20 @@ export default function ScanPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.08 }}
-                      className={`absolute w-9 h-9 border-[#00d26a] ${cls}`}
+                      className={`absolute w-9 h-9 border-[#ff5a5f] ${cls}`}
                     />
                   ))}
                   <motion.div
                     animate={{ top: ["12%", "82%", "12%"] }}
                     transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
                     style={{ position: "absolute" }}
-                    className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[#00d26a] to-transparent rounded-full"
+                    className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[#ff5a5f] to-transparent rounded-full"
                   />
                   {/* Center dot */}
                   <motion.div
                     animate={{ opacity: [0.4, 1, 0.4], scale: [0.9, 1.05, 0.9] }}
                     transition={{ duration: 1.8, repeat: Infinity }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#00d26a]"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#ff5a5f]"
                   />
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function ScanPage() {
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                 placeholder="EB-A1B2C3D4"
-                className="w-full px-4 py-3.5 rounded-xl bg-[#060f17] border border-white/10 text-white font-mono placeholder-white/20 text-sm focus:outline-none focus:border-[#00d26a]/50 focus:ring-1 focus:ring-[#00d26a]/12 transition-all"
+                className="w-full px-4 py-3.5 rounded-xl bg-[#060f17] border border-white/10 text-white font-mono placeholder-white/20 text-sm focus:outline-none focus:border-[#ff5a5f]/50 focus:ring-1 focus:ring-[#ff5a5f]/12 transition-all"
                 autoFocus
               />
             </div>
@@ -279,7 +279,7 @@ export default function ScanPage() {
               whileHover={!validating && manualCode.trim() ? { scale: 1.015 } : {}}
               whileTap={!validating && manualCode.trim() ? { scale: 0.975 } : {}}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="w-full py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_18px_rgba(0,210,106,0.3)] transition-shadow flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_18px_rgba(255,90,95,0.3)] transition-shadow flex items-center justify-center gap-2"
             >
               {validating
                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Validating…</>
@@ -304,27 +304,27 @@ export default function ScanPage() {
                 initial={{ scale: 0.85, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                className="rounded-2xl bg-[#00d26a]/8 border border-[#00d26a]/30 overflow-hidden shadow-[0_0_40px_rgba(0,210,106,0.12)]"
+                className="rounded-2xl bg-[#ff5a5f]/8 border border-[#ff5a5f]/30 overflow-hidden shadow-[0_0_40px_rgba(255,90,95,0.12)]"
               >
                 {/* Banner */}
-                <div className="flex items-center gap-4 px-5 py-4 bg-[#00d26a]/10 border-b border-[#00d26a]/15">
+                <div className="flex items-center gap-4 px-5 py-4 bg-[#ff5a5f]/10 border-b border-[#ff5a5f]/15">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
-                    className="w-12 h-12 rounded-2xl bg-[#00d26a]/20 flex items-center justify-center flex-shrink-0"
+                    className="w-12 h-12 rounded-2xl bg-[#ff5a5f]/20 flex items-center justify-center flex-shrink-0"
                   >
-                    <CheckCircle2 className="w-7 h-7 text-[#00d26a]" />
+                    <CheckCircle2 className="w-7 h-7 text-[#ff5a5f]" />
                   </motion.div>
                   <div>
-                    <p className="text-[#00d26a] font-extrabold text-lg leading-tight">Valid Ticket!</p>
-                    <p className="text-[#00d26a]/55 text-xs">Check-in recorded successfully</p>
+                    <p className="text-[#ff5a5f] font-extrabold text-lg leading-tight">Valid Ticket!</p>
+                    <p className="text-[#ff5a5f]/55 text-xs">Check-in recorded successfully</p>
                   </div>
                   {/* Pulse ring */}
                   <motion.div
                     animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="ml-auto w-3 h-3 rounded-full bg-[#00d26a]"
+                    className="ml-auto w-3 h-3 rounded-full bg-[#ff5a5f]"
                   />
                 </div>
 
@@ -343,8 +343,8 @@ export default function ScanPage() {
                       transition={{ delay: 0.15 + i * 0.06 }}
                       className="flex items-center gap-3"
                     >
-                      <div className="w-6 h-6 rounded-lg bg-[#00d26a]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-3 h-3 text-[#00d26a]/60" />
+                      <div className="w-6 h-6 rounded-lg bg-[#ff5a5f]/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-3 h-3 text-[#ff5a5f]/60" />
                       </div>
                       <span className="text-white/35 text-xs w-14 flex-shrink-0">{label}</span>
                       <span className={`text-white text-sm font-medium truncate ${mono ? "font-mono" : ""}`}>{val}</span>
@@ -398,7 +398,7 @@ export default function ScanPage() {
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             >
-              <Loader2 className="w-5 h-5 text-[#00d26a]" />
+              <Loader2 className="w-5 h-5 text-[#ff5a5f]" />
             </motion.div>
             Validating ticket…
           </motion.div>

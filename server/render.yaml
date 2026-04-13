@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: eventbookings-api
+    name: eventnest-api
     runtime: node
     region: oregon
     plan: free
@@ -38,9 +38,9 @@ services:
 
       # Frontend origin — update to your Vercel domain after first deploy
       - key: CLIENT_URL
-        value: https://eventbookings.vercel.app
+        value: https://eventnest.vercel.app
       - key: FRONTEND_URL
-        value: https://eventbookings.vercel.app
+        value: https://eventnest.vercel.app
 
       # Stripe — set in Render dashboard
       - key: STRIPE_SECRET_KEY
@@ -60,7 +60,7 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: SMTP_FROM
-        value: "EventBookings <tickets@eventbookings.dev>"
+        value: "EventNest <tickets@eventnest.dev>"
 
       # Rate limiting
       - key: RATE_LIMIT_WINDOW_MS

@@ -10,7 +10,7 @@ const testimonials = [
     avatar: "SM",
     color: "bg-purple-500",
     rating: 5,
-    text: "EventBookings completely transformed how I sell tickets. Setup took under 10 minutes and I sold out my first show within 48 hours. The analytics dashboard is genuinely impressive.",
+    text: "EventNest completely transformed how I sell tickets. Setup took under 10 minutes and I sold out my first show within 48 hours. The analytics dashboard is genuinely impressive.",
     platform: "Capterra",
     verified: true,
   },
@@ -20,7 +20,7 @@ const testimonials = [
     avatar: "JO",
     color: "bg-blue-500",
     rating: 5,
-    text: "We moved our 3,000-person annual festival to EventBookings last year. The checkout flow is silky smooth and we saw a 34% drop in cart abandonment compared to our old platform.",
+    text: "We moved our 3,000-person annual festival to EventNest last year. The checkout flow is silky smooth and we saw a 34% drop in cart abandonment compared to our old platform.",
     platform: "G2",
     verified: true,
   },
@@ -28,7 +28,7 @@ const testimonials = [
     name: "Priya Sharma",
     role: "Corporate Events Manager",
     avatar: "PS",
-    color: "bg-[#00d26a]",
+    color: "bg-[#ff5a5f]",
     rating: 5,
     text: "The refund system and attendee management tools save my team hours every week. Customer support responds in minutes, not days. This is the standard all event platforms should aim for.",
     platform: "Capterra",
@@ -40,7 +40,7 @@ const testimonials = [
     avatar: "MD",
     color: "bg-amber-500",
     rating: 5,
-    text: "I've used five different ticketing platforms over my career. EventBookings is the only one where I've never had to call support to fix a technical issue. It just works.",
+    text: "I've used five different ticketing platforms over my career. EventNest is the only one where I've never had to call support to fix a technical issue. It just works.",
     platform: "G2",
     verified: true,
   },
@@ -60,7 +60,7 @@ const testimonials = [
     avatar: "DC",
     color: "bg-cyan-500",
     rating: 5,
-    text: "We run a 2,000-attendee developer conference every spring. Custom promo codes, tiered pricing, and the sponsor dashboard make EventBookings indispensable for our team.",
+    text: "We run a 2,000-attendee developer conference every spring. Custom promo codes, tiered pricing, and the sponsor dashboard make EventNest indispensable for our team.",
     platform: "G2",
     verified: true,
   },
@@ -88,7 +88,7 @@ export default function Testimonials() {
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Section glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-[#00d26a]/5 blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-[#ff5a5f]/5 blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
@@ -128,10 +128,10 @@ export default function Testimonials() {
 
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-4">
             Trusted by{" "}
-            <span className="text-[#00d26a]">Event Professionals</span>
+            <span className="text-[#ff5a5f]">Event Professionals</span>
           </h2>
           <p className="text-white/50 max-w-xl mx-auto">
-            Organizers worldwide use EventBookings to sell out venues, manage
+            Organizers worldwide use EventNest to sell out venues, manage
             attendees, and grow their audiences — without the headaches.
           </p>
         </motion.div>
@@ -146,7 +146,7 @@ export default function Testimonials() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
-              className="group relative rounded-2xl bg-[#0d1f2d] border border-white/8 p-6 hover:border-[#00d26a]/30 hover:shadow-xl hover:shadow-[#00d26a]/8 transition-all duration-300"
+              className="group relative rounded-2xl bg-[#112240] border border-white/8 p-6 hover:border-[#ff5a5f]/30 hover:shadow-xl hover:shadow-[#ff5a5f]/8 transition-all duration-300"
             >
               {/* Quote mark */}
               <span className="absolute top-5 right-5 text-5xl text-white/5 font-serif leading-none select-none">

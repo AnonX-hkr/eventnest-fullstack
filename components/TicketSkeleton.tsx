@@ -4,7 +4,7 @@
  */
 export default function TicketSkeleton() {
   return (
-    <div className="rounded-2xl bg-[#0d1f2d] border border-white/6 overflow-hidden">
+    <div className="rounded-2xl bg-[#112240] border border-white/6 overflow-hidden">
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/6">
         <div className="flex items-center gap-3">

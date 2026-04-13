@@ -14,10 +14,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EventBookings — Find & Book Live Experiences",
+  title: "EventNest | Smart Ticketing",
   description:
-    "Discover concerts, conferences, art fairs, food festivals, and more. Book tickets in seconds with instant confirmation.",
-  keywords: ["events", "tickets", "concerts", "conferences", "booking"],
+    "EventNest — the smart way to discover, create, and sell tickets to live experiences. Concerts, conferences, art fairs, and more. Book in seconds with instant confirmation.",
+  keywords: ["events", "tickets", "concerts", "conferences", "booking", "eventnest", "smart ticketing"],
 };
 
 export default function RootLayout({
@@ -37,18 +37,19 @@ export default function RootLayout({
             toastOptions={{
               duration: 4000,
               style: {
-                background: "#0d1f2d",
+                background: "#1a2b4b",
                 color: "#fff",
-                border: "1px solid rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "12px",
                 fontSize: "14px",
                 padding: "12px 16px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
               },
               success: {
-                iconTheme: { primary: "#00d26a", secondary: "#0d1f2d" },
+                iconTheme: { primary: "#00d26a", secondary: "#1a2b4b" },
               },
               error: {
-                iconTheme: { primary: "#ef4444", secondary: "#0d1f2d" },
+                iconTheme: { primary: "#ef4444", secondary: "#1a2b4b" },
               },
             }}
           />

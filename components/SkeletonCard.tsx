@@ -8,7 +8,7 @@ export default function SkeletonCard({ index = 0 }: { index?: number }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="rounded-2xl overflow-hidden bg-[#0d1f2d] border border-white/6"
+      className="rounded-2xl overflow-hidden bg-[#112240] border border-white/6"
     >
       {/* Image placeholder */}
       <div className="h-48 relative skeleton-shimmer">

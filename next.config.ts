@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
    * all CORS preflight issues.
    *
    * Production: Rewrites are disabled. NEXT_PUBLIC_API_URL must be set
-   * to the full Render backend URL (e.g. https://eventbookings-api.onrender.com/api).
+   * to the full Render backend URL (e.g. https://eventnest-api.onrender.com/api).
    * The browser then calls the API directly — CORS is handled by Express.
    */
   async rewrites() {

@@ -81,7 +81,7 @@ const defaultData: WizardData = {
 };
 
 // ─── Shared input styles ──────────────────────────────────────────────────────
-const inputCls = "w-full px-4 py-3 rounded-xl bg-[#060f17] border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-[#00d26a]/50 focus:ring-1 focus:ring-[#00d26a]/20 transition-all";
+const inputCls = "w-full px-4 py-3 rounded-xl bg-[#060f17] border border-white/10 text-white placeholder-white/20 text-sm focus:outline-none focus:border-[#ff5a5f]/50 focus:ring-1 focus:ring-[#ff5a5f]/20 transition-all";
 const labelCls = "block text-white/55 text-xs font-medium mb-1.5";
 
 export default function CreateEventPage() {
@@ -218,8 +218,8 @@ export default function CreateEventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-24 text-center">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200 }}
-          className="w-20 h-20 rounded-full bg-[#00d26a]/15 flex items-center justify-center mx-auto mb-6">
-          <Check className="w-10 h-10 text-[#00d26a]" />
+          className="w-20 h-20 rounded-full bg-[#ff5a5f]/15 flex items-center justify-center mx-auto mb-6">
+          <Check className="w-10 h-10 text-[#ff5a5f]" />
         </motion.div>
         <h2 className="text-3xl font-extrabold text-white mb-3">
           {published ? "Event Published!" : "Draft Saved!"}
@@ -231,7 +231,7 @@ export default function CreateEventPage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={() => router.push(`/event/${createdEventId}`)}
-            className="btn-scale flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm shadow-[0_0_18px_rgba(0,210,106,0.3)]">
+            className="btn-scale flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm shadow-[0_0_18px_rgba(255,90,95,0.3)]">
             <ExternalLink className="w-4 h-4" /> View Event
           </button>
           <button onClick={() => router.push("/dashboard")}
@@ -264,19 +264,19 @@ export default function CreateEventPage() {
           return (
             <div key={id} className="flex items-center gap-1 flex-shrink-0">
               <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                current ? "bg-[#00d26a]/15 text-[#00d26a] border border-[#00d26a]/30"
+                current ? "bg-[#ff5a5f]/15 text-[#ff5a5f] border border-[#ff5a5f]/30"
                 : done   ? "bg-white/5 text-white/50"
                          : "text-white/25"
               }`}>
                 {done
-                  ? <Check className="w-3.5 h-3.5 text-[#00d26a]" />
+                  ? <Check className="w-3.5 h-3.5 text-[#ff5a5f]" />
                   : <Icon className="w-3.5 h-3.5" />
                 }
                 <span className="hidden sm:block">{label}</span>
                 <span className="sm:hidden">{id}</span>
               </div>
               {idx < STEPS.length - 1 && (
-                <div className={`w-5 h-px flex-shrink-0 ${done ? "bg-[#00d26a]/40" : "bg-white/10"}`} />
+                <div className={`w-5 h-px flex-shrink-0 ${done ? "bg-[#ff5a5f]/40" : "bg-white/10"}`} />
               )}
             </div>
           );
@@ -291,7 +291,7 @@ export default function CreateEventPage() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.25 }}
-          className="rounded-2xl bg-[#0d1f2d] border border-white/8 p-6 sm:p-8 mb-6"
+          className="rounded-2xl bg-[#112240] border border-white/8 p-6 sm:p-8 mb-6"
         >
 
           {/* ── Step 1: Basic Info ─────────────────────────────────────────── */}
@@ -315,7 +315,7 @@ export default function CreateEventPage() {
                 <select value={data.category} onChange={(e) => set("category", e.target.value)}
                   className={inputCls} style={{ transform: "none" }}>
                   {CATEGORIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#0c2230]">{c}</option>
+                    <option key={c} value={c} className="bg-[#0a1628]">{c}</option>
                   ))}
                 </select>
               </div>
@@ -329,7 +329,7 @@ export default function CreateEventPage() {
                   {errors.description
                     ? <p className="text-red-400 text-xs">{errors.description}</p>
                     : <span />}
-                  <span className={`text-xs ${data.description.length < 20 ? "text-white/30" : "text-[#00d26a]"}`}>
+                  <span className={`text-xs ${data.description.length < 20 ? "text-white/30" : "text-[#ff5a5f]"}`}>
                     {data.description.length} chars
                   </span>
                 </div>
@@ -388,7 +388,7 @@ export default function CreateEventPage() {
                 <select value={data.timezone} onChange={(e) => set("timezone", e.target.value)}
                   className={inputCls} style={{ transform: "none" }}>
                   {TIMEZONES.map((tz) => (
-                    <option key={tz} value={tz} className="bg-[#0c2230]">{tz}</option>
+                    <option key={tz} value={tz} className="bg-[#0a1628]">{tz}</option>
                   ))}
                 </select>
               </div>
@@ -412,7 +412,7 @@ export default function CreateEventPage() {
                     style={{ transform: "none" }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all ${
                       data.isOnline === val
-                        ? "bg-[#00d26a]/10 border-[#00d26a]/40 text-[#00d26a]"
+                        ? "bg-[#ff5a5f]/10 border-[#ff5a5f]/40 text-[#ff5a5f]"
                         : "bg-[#060f17] border-white/10 text-white/50 hover:border-white/20"
                     }`}>
                     <Icon className="w-4 h-4" /> {label}
@@ -473,16 +473,52 @@ export default function CreateEventPage() {
               <div>
                 <h2 className="text-white font-bold text-lg mb-1">Ticket Tiers</h2>
                 <p className="text-white/40 text-sm">
-                  Define one or more ticket types. You can mix free and paid tiers.
+                  Define one or more ticket types (e.g. Early Bird, VIP, General Admission). Mix free and paid.
                 </p>
+              </div>
+
+              {/* Reserved seating toggle */}
+              <div className="flex items-center justify-between p-4 rounded-xl bg-[#060f17] border border-white/8">
+                <div>
+                  <p className="text-white text-sm font-semibold">Reserved Seating</p>
+                  <p className="text-white/35 text-xs mt-0.5">Assign specific seat numbers to each ticket</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => set("reservedSeating" as keyof WizardData, !(data as WizardData & { reservedSeating?: boolean }).reservedSeating as unknown as WizardData[keyof WizardData])}
+                  style={{ transform: "none" }}
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    (data as WizardData & { reservedSeating?: boolean }).reservedSeating ? "bg-[#ff5a5f]" : "bg-white/15"
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                    (data as WizardData & { reservedSeating?: boolean }).reservedSeating ? "translate-x-5" : "translate-x-0"
+                  }`} />
+                </button>
               </div>
 
               {data.ticketTiers.map((tier, i) => (
                 <div key={i} className="rounded-xl bg-[#060f17] border border-white/8 p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-white font-semibold text-sm">
-                      Tier {i + 1}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-sm">
+                        Tier {i + 1}
+                      </span>
+                      {tier.type && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          tier.type === "vip"        ? "bg-amber-500/15 text-amber-400" :
+                          tier.type === "early-bird" ? "bg-green-500/15 text-green-400" :
+                          tier.type === "student"    ? "bg-blue-500/15 text-blue-400"  :
+                          tier.type === "group"      ? "bg-purple-500/15 text-purple-400" :
+                          "bg-white/8 text-white/50"
+                        }`}>
+                          {tier.type.charAt(0).toUpperCase() + tier.type.slice(1).replace("-", " ")}
+                        </span>
+                      )}
+                      {tier.price === 0 && (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[#ff5a5f]/10 text-[#ff5a5f]">Free</span>
+                      )}
+                    </div>
                     {data.ticketTiers.length > 1 && (
                       <button type="button" onClick={() => removeTier(i)}
                         className="p-1.5 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
@@ -507,7 +543,7 @@ export default function CreateEventPage() {
                         onChange={(e) => updateTier(i, "type", e.target.value as TicketTier["type"])}
                         className={inputCls} style={{ transform: "none" }}>
                         {TICKET_TYPES.map((t) => (
-                          <option key={t} value={t} className="bg-[#0c2230]">
+                          <option key={t} value={t} className="bg-[#0a1628]">
                             {t.charAt(0).toUpperCase() + t.slice(1).replace("-", " ")}
                           </option>
                         ))}
@@ -529,18 +565,39 @@ export default function CreateEventPage() {
                         className={`${inputCls} ${errors[`tier_${i}_qty`] ? "border-red-500/50" : ""}`} />
                       {errors[`tier_${i}_qty`] && <p className="text-red-400 text-xs mt-1">{errors[`tier_${i}_qty`]}</p>}
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <label className={labelCls}>Max per order</label>
                       <input type="number" min="1" max="100" value={tier.maxPerOrder ?? 10}
                         onChange={(e) => updateTier(i, "maxPerOrder", parseInt(e.target.value) || 10)}
                         className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Price badge label (optional)</label>
+                      <input type="text" value={tier.description ?? ""}
+                        onChange={(e) => updateTier(i, "description", e.target.value)}
+                        placeholder="e.g. Includes meet & greet, Front row access"
+                        className={inputCls} />
+                    </div>
+                    {/* Sale window */}
+                    <div>
+                      <label className={labelCls}>Sale Starts (optional)</label>
+                      <input type="datetime-local" value={tier.saleStartsAt ?? ""}
+                        onChange={(e) => updateTier(i, "saleStartsAt", e.target.value || undefined)}
+                        className={`${inputCls} [color-scheme:dark]`} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Sale Ends (optional)</label>
+                      <input type="datetime-local" value={tier.saleEndsAt ?? ""}
+                        onChange={(e) => updateTier(i, "saleEndsAt", e.target.value || undefined)}
+                        className={`${inputCls} [color-scheme:dark]`} />
+                      <p className="text-white/25 text-xs mt-1">Leave blank to close sales at event start</p>
                     </div>
                   </div>
                 </div>
               ))}
 
               <button type="button" onClick={addTier}
-                className="btn-scale w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-white/15 text-white/50 text-sm hover:border-[#00d26a]/40 hover:text-[#00d26a] transition-all">
+                className="btn-scale w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-white/15 text-white/50 text-sm hover:border-[#ff5a5f]/40 hover:text-[#ff5a5f] transition-all">
                 <Plus className="w-4 h-4" /> Add another tier
               </button>
 
@@ -553,7 +610,7 @@ export default function CreateEventPage() {
                       style={{ transform: "none" }}
                       className={`py-2.5 px-3 rounded-xl border text-xs font-medium transition-all ${
                         data.refundPolicy === value
-                          ? "bg-[#00d26a]/10 border-[#00d26a]/40 text-[#00d26a]"
+                          ? "bg-[#ff5a5f]/10 border-[#ff5a5f]/40 text-[#ff5a5f]"
                           : "bg-[#060f17] border-white/10 text-white/50 hover:border-white/20"
                       }`}>
                       {label}
@@ -642,7 +699,7 @@ export default function CreateEventPage() {
                         <span className="text-white/35 text-xs ml-2">({t.type})</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[#00d26a] font-bold text-sm">
+                        <span className="text-[#ff5a5f] font-bold text-sm">
                           {t.price === 0 ? "FREE" : `$${t.price}`}
                         </span>
                         <span className="text-white/35 text-xs ml-2">× {t.quantity}</span>
@@ -669,7 +726,7 @@ export default function CreateEventPage() {
                     : "Save as Draft"}
                 </button>
                 <button type="button" onClick={() => handleSubmit(true)} disabled={submitting}
-                  className="btn-scale flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm shadow-[0_0_18px_rgba(0,210,106,0.3)] hover:shadow-[0_0_28px_rgba(0,210,106,0.5)] disabled:opacity-50 transition-all">
+                  className="btn-scale flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm shadow-[0_0_18px_rgba(255,90,95,0.3)] hover:shadow-[0_0_28px_rgba(255,90,95,0.5)] disabled:opacity-50 transition-all">
                   {submitting
                     ? <><Loader2 className="w-4 h-4 animate-spin" /> Publishing…</>
                     : <><Send className="w-4 h-4" /> Publish Now</>}
@@ -693,13 +750,13 @@ export default function CreateEventPage() {
           <div className="hidden sm:flex items-center gap-1.5">
             {STEPS.map(({ id }) => (
               <div key={id} className={`h-1.5 rounded-full transition-all duration-300 ${
-                id <= step ? "bg-[#00d26a] w-6" : "bg-white/10 w-4"
+                id <= step ? "bg-[#ff5a5f] w-6" : "bg-white/10 w-4"
               }`} />
             ))}
           </div>
 
           <button type="button" onClick={next}
-            className="btn-scale flex items-center gap-2 px-6 py-3 rounded-xl bg-[#00d26a] text-[#0c2230] font-bold text-sm shadow-[0_0_16px_rgba(0,210,106,0.3)] hover:shadow-[0_0_24px_rgba(0,210,106,0.5)] transition-all">
+            className="btn-scale flex items-center gap-2 px-6 py-3 rounded-xl bg-[#ff5a5f] text-white font-bold text-sm shadow-[0_0_16px_rgba(255,90,95,0.3)] hover:shadow-[0_0_24px_rgba(255,90,95,0.5)] transition-all">
             Next <ChevronRight className="w-4 h-4" />
           </button>
         </div>

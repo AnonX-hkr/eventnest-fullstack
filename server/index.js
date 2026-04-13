@@ -1,5 +1,5 @@
 /**
- * EventBookings API
+ * EventNest API
  * ─────────────────────────────────────────────────────────────────────────────
  * Stack   : Node.js · Express 5 · MongoDB (Mongoose) · JWT Auth
  * Entry   : node index.js  |  nodemon index.js (dev)
@@ -38,7 +38,12 @@ app.use(helmet());
 // CORS — allow Next.js frontend
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://eventnest-fullstack.vercel.app",
+      "https://eventbookings-ten.vercel.app", 
+      process.env.CLIENT_URL
+    ].filter(Boolean),
     credentials: true,          // needed for HttpOnly cookie exchange
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
@@ -83,7 +88,7 @@ const healthHandler = (req, res) => {
   const mongoose = require("mongoose");
   res.status(200).json({
     success: true,
-    message: "EventBookings API is running",
+    message: "EventNest API is running",
     environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
     uptime: `${Math.floor(process.uptime())}s`,
@@ -113,7 +118,7 @@ async function start() {
   app.listen(PORT, () => {
     console.log(`
   ╔══════════════════════════════════════════╗
-  ║   EventBookings API                      ║
+  ║   EventNest API                          ║
   ║   http://localhost:${PORT}                  ║
   ║   Environment : ${(process.env.NODE_ENV || "development").padEnd(20)}║
   ╚══════════════════════════════════════════╝

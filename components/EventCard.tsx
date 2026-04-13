@@ -6,15 +6,15 @@ import { MapPin, Calendar, Users } from "lucide-react";
 import { Event } from "@/data/mockData";
 
 const categoryColors: Record<string, { pill: string; glow: string }> = {
-  Music:      { pill: "bg-purple-500/15 text-purple-300 border-purple-500/20",  glow: "rgba(168,85,247,0.12)"  },
-  Technology: { pill: "bg-blue-500/15 text-blue-300 border-blue-500/20",        glow: "rgba(59,130,246,0.12)"  },
-  Arts:       { pill: "bg-pink-500/15 text-pink-300 border-pink-500/20",         glow: "rgba(236,72,153,0.12)"  },
-  Business:   { pill: "bg-amber-500/15 text-amber-300 border-amber-500/20",      glow: "rgba(245,158,11,0.12)"  },
-  Sports:     { pill: "bg-orange-500/15 text-orange-300 border-orange-500/20",   glow: "rgba(249,115,22,0.12)"  },
-  Food:       { pill: "bg-red-500/15 text-red-300 border-red-500/20",            glow: "rgba(239,68,68,0.12)"   },
+  Music:      { pill: "bg-purple-500/15 text-purple-300 border-purple-500/20",  glow: "rgba(168,85,247,0.15)"  },
+  Technology: { pill: "bg-blue-400/15 text-blue-300 border-blue-400/20",        glow: "rgba(96,165,250,0.15)"  },
+  Arts:       { pill: "bg-pink-500/15 text-pink-300 border-pink-500/20",         glow: "rgba(236,72,153,0.15)"  },
+  Business:   { pill: "bg-amber-500/15 text-amber-300 border-amber-500/20",      glow: "rgba(245,158,11,0.15)"  },
+  Sports:     { pill: "bg-orange-500/15 text-orange-300 border-orange-500/20",   glow: "rgba(249,115,22,0.15)"  },
+  Food:       { pill: "bg-red-500/15 text-red-300 border-red-500/20",            glow: "rgba(239,68,68,0.15)"   },
 };
 
-const fallbackColors = { pill: "bg-white/8 text-white/60 border-white/10", glow: "rgba(0,210,106,0.08)" };
+const fallbackColors = { pill: "bg-white/8 text-white/60 border-white/10", glow: "rgba(255,90,95,0.10)" };
 
 interface EventCardProps {
   event: Event;
@@ -22,9 +22,9 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, index = 0 }: EventCardProps) {
-  const dateObj = new Date(event.date);
-  const day     = dateObj.toLocaleDateString("en-US", { day: "numeric" });
-  const month   = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+  const dateObj  = new Date(event.date);
+  const day      = dateObj.toLocaleDateString("en-US", { day: "numeric" });
+  const month    = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
   const formatted = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const { pill, glow } = categoryColors[event.category] ?? fallbackColors;
@@ -43,12 +43,12 @@ export default function EventCard({ event, index = 0 }: EventCardProps) {
     >
       <Link href={`/event/${event.id}`} className="group block h-full" tabIndex={0}>
         <motion.div
-          whileHover={{ y: -5, boxShadow: `0 20px 48px ${glow}, 0 0 0 1px rgba(0,210,106,0.18)` }}
+          whileHover={{ y: -5, boxShadow: `0 20px 48px ${glow}, 0 0 0 1px rgba(255,90,95,0.2)` }}
           whileTap={{ scale: 0.985 }}
           transition={{ type: "spring", stiffness: 280, damping: 22 }}
-          className="h-full rounded-2xl overflow-hidden bg-[#0d1f2d] border border-white/8 transition-colors duration-300 group-hover:border-[#00d26a]/30"
+          className="h-full rounded-2xl overflow-hidden bg-[#112240] border border-white/8 transition-colors duration-300 group-hover:border-[#ff5a5f]/30"
         >
-          {/* ── Image ──────────────────────────────────────────────────────── */}
+          {/* ── Image ── */}
           <div className="relative h-48 overflow-hidden flex-shrink-0">
             <motion.img
               src={event.imageUrl}
@@ -57,11 +57,10 @@ export default function EventCard({ event, index = 0 }: EventCardProps) {
               transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="w-full h-full object-cover"
             />
-            {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f2d]/85 via-[#0d1f2d]/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#112240]/90 via-[#112240]/20 to-transparent" />
 
             {/* Date badge */}
-            <div className="absolute top-3 left-3 flex flex-col items-center justify-center w-11 h-12 rounded-xl bg-[#e74c3c] shadow-lg shadow-[#e74c3c]/30">
+            <div className="absolute top-3 left-3 flex flex-col items-center justify-center w-11 h-12 rounded-xl bg-[#ff5a5f] shadow-lg shadow-[#ff5a5f]/30">
               <span className="text-white font-extrabold text-lg leading-none">{day}</span>
               <span className="text-white/90 text-[9px] font-bold tracking-widest uppercase leading-none mt-0.5">
                 {month}
@@ -71,7 +70,7 @@ export default function EventCard({ event, index = 0 }: EventCardProps) {
             {/* Price badge */}
             <motion.span
               whileHover={{ scale: 1.06 }}
-              className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#00d26a] text-[#0c2230] text-xs font-extrabold shadow-md shadow-[#00d26a]/30"
+              className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#1a2b4b] border border-white/20 text-white text-xs font-extrabold shadow-md"
             >
               {event.price === 0 ? "Free" : `$${event.price}`}
             </motion.span>
@@ -81,44 +80,43 @@ export default function EventCard({ event, index = 0 }: EventCardProps) {
               {event.category}
             </span>
 
-            {/* Almost sold out badge */}
+            {/* Almost sold out */}
             {almostSoldOut && (
               <motion.span
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="absolute bottom-3 right-3 px-2 py-1 rounded-full bg-red-500/90 text-white text-[10px] font-bold backdrop-blur-sm"
+                className="absolute bottom-3 right-3 px-2 py-1 rounded-full bg-[#ff5a5f]/90 text-white text-[10px] font-bold backdrop-blur-sm"
               >
                 Almost gone
               </motion.span>
             )}
           </div>
 
-          {/* ── Content ────────────────────────────────────────────────────── */}
+          {/* ── Content ── */}
           <div className="p-5">
-            <h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-[#00d26a] transition-colors duration-200 line-clamp-2 min-h-[2.8rem]">
+            <h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-[#ff5a5f] transition-colors duration-200 line-clamp-2 min-h-[2.8rem]">
               {event.title}
             </h3>
 
             <div className="flex flex-col gap-2 text-sm text-white/50 mb-4">
               <div className="flex items-center gap-2">
-                <Calendar className="w-3.5 h-3.5 text-[#00d26a]/60 flex-shrink-0" />
+                <Calendar className="w-3.5 h-3.5 text-[#ff5a5f]/70 flex-shrink-0" />
                 <span className="truncate">{formatted} · {event.time}</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#00d26a]/60 flex-shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#ff5a5f]/70 flex-shrink-0" />
                 <span className="truncate">{event.city}</span>
               </div>
             </div>
 
             {/* Footer */}
             <div className="pt-4 border-t border-white/6 space-y-2">
-              {/* Capacity bar */}
               <div className="flex items-center justify-between text-xs text-white/35 mb-1">
                 <span className="flex items-center gap-1">
                   <Users className="w-3 h-3" />
                   {event.ticketsAvailable} left
                 </span>
-                <span className="text-[#00d26a] font-semibold group-hover:underline transition-all">
+                <span className="text-[#ff5a5f] font-semibold group-hover:underline transition-all">
                   View Details →
                 </span>
               </div>
@@ -129,7 +127,7 @@ export default function EventCard({ event, index = 0 }: EventCardProps) {
                     whileInView={{ width: `${soldPct}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.2 + index * 0.04, ease: "easeOut" }}
-                    className={`h-full rounded-full ${almostSoldOut ? "bg-red-400" : "bg-[#00d26a]/50"}`}
+                    className={`h-full rounded-full ${almostSoldOut ? "bg-[#ff5a5f]" : "bg-[#ff5a5f]/50"}`}
                   />
                 </div>
               )}
