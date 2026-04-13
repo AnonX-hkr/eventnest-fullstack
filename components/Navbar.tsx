@@ -118,8 +118,8 @@ const INDUSTRY_LINKS = [
 ];
 
 const HELP_LINKS = [
-  { label: "Help Center",    href: "#", icon: HelpCircle },
-  { label: "For Organizers", href: "#", icon: Building2  },
+  { label: "Help Center",    href: "mailto:support@eventnest.dev", icon: HelpCircle },
+  { label: "For Organizers", href: "/create-event", icon: Building2  },
   { label: "API Docs",       href: "#", icon: LayoutGrid },
   { label: "Status Page",    href: "#", icon: Zap        },
 ];
