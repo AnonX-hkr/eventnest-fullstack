@@ -262,7 +262,7 @@ export default function Navbar() {
 
           {/* Features */}
           <Link
-            href="#"
+            href="/#features"
             className="flex items-center h-full px-[11px] text-[14px] font-normal text-white/80 hover:text-white transition-colors whitespace-nowrap"
           >
             Features
@@ -283,7 +283,7 @@ export default function Navbar() {
 
           {/* Enterprise */}
           <Link
-            href="#"
+            href="/#enterprise"
             className="flex items-center h-full px-[11px] text-[14px] font-normal text-white/80 hover:text-white transition-colors whitespace-nowrap"
           >
             Enterprise
@@ -299,7 +299,7 @@ export default function Navbar() {
 
           {/* Pricing */}
           <Link
-            href="#"
+            href="/#pricing"
             className="flex items-center h-full px-[11px] text-[14px] font-normal text-white/80 hover:text-white transition-colors whitespace-nowrap"
           >
             Pricing
@@ -576,10 +576,10 @@ export default function Navbar() {
           >
             <div className="px-4 py-3 flex flex-col gap-px">
               {[
-                { href: "#",        label: "Features"      },
-                { href: "/explore", label: "Explore Events" },
-                { href: "#",        label: "Enterprise"     },
-                { href: "#",        label: "Pricing"        },
+                { href: "/#features", label: "Features"      },
+                { href: "/explore",   label: "Explore Events" },
+                { href: "/#enterprise", label: "Enterprise"     },
+                { href: "/#pricing",    label: "Pricing"        },
               ].map(({ href, label }) => (
                 <Link
                   key={label}

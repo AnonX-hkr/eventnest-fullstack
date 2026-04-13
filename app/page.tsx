@@ -245,7 +245,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           SOCIAL PROOF — Organisations strip
           ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 bg-white border-b border-gray-100">
+      <section id="enterprise" className="py-16 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
@@ -282,7 +282,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           PRICING — Lowest fees in the industry
           ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28">
+      <section id="pricing" className="py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl gradient-soft p-8 sm:p-16">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -401,7 +401,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           FEATURES — Grid of capabilities
           ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 bg-white">
+      <section id="features" className="py-20 sm:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center max-w-2xl mx-auto mb-16">

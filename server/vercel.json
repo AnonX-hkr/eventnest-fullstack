@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "eventnest-express-backend",
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "index.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://adilmalik1338_db_user:GSohbXP2KkpCnXLB@cluster0.c7hxxee.mongodb.net/EventNest?retryWrites=true&w=majority&appName=Cluster0",
+    "JWT_ACCESS_SECRET": "adilkhan_secret_123_key",
+    "JWT_REFRESH_SECRET": "adilkhan_secret_123_key",
+    "CLIENT_URL": "https://eventnest-fullstack.vercel.app"
+  }
+}
