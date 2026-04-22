@@ -17,25 +17,25 @@ import {
 
 const footerLinks = {
   Company: [
-    { label: "About Us", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Press & Media", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Contact Us", href: "#" },
+    { label: "About Us", href: "/info/about-us" },
+    { label: "Careers", href: "/info/careers" },
+    { label: "Press & Media", href: "/info/press-media" },
+    { label: "Blog", href: "/info/blog" },
+    { label: "Contact Us", href: "/info/contact-us" },
   ],
   Resources: [
-    { label: "Help Center", href: "#" },
-    { label: "For Organizers", href: "#" },
-    { label: "Partner Program", href: "#" },
-    { label: "API Documentation", href: "#" },
-    { label: "Status Page", href: "#" },
+    { label: "Help Center", href: "/info/help-center" },
+    { label: "For Organizers", href: "/info/for-organizers" },
+    { label: "Partner Program", href: "/info/partner-program" },
+    { label: "API Documentation", href: "/info/api-documentation" },
+    { label: "Status Page", href: "/info/status-page" },
   ],
   Legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Settings", href: "#" },
-    { label: "Accessibility", href: "#" },
-    { label: "Refund Policy", href: "#" },
+    { label: "Privacy Policy", href: "/info/privacy-policy" },
+    { label: "Terms of Service", href: "/info/terms-of-service" },
+    { label: "Cookie Settings", href: "/info/cookie-settings" },
+    { label: "Accessibility", href: "/info/accessibility" },
+    { label: "Refund Policy", href: "/info/refund-policy" },
   ],
 };
 
