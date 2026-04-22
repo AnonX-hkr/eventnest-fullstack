@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ArrowRight, Star, Zap, Shield, Smartphone,
   FileText, CreditCard, BarChart3, Users, Globe, QrCode,
   CheckCircle, ChevronRight, Headphones, Palette,
+  Calendar, RefreshCw,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { eventApi, ApiEvent } from "@/lib/api";
+import EventCard from "@/components/EventCard";
+import SkeletonCard from "@/components/SkeletonCard";
+import type { Event as MockEvent } from "@/data/mockData";
 
 // ─── Hero images (Unsplash) ──────────────────────────────────────────────────
 const HERO_IMAGES = [
@@ -111,13 +117,44 @@ function Stars({ count }: { count: number }) {
   );
 }
 
+// ─── Adapter ─────────────────────────────────────────────────────────────────
+function toCardEvent(e: ApiEvent): MockEvent {
+  return {
+    id:               e._id,
+    title:            e.title,
+    description:      e.description,
+    price:            e.ticketTiers?.[0]?.price ?? 0,
+    location:         `${e.venue?.name ?? ""}, ${e.venue?.city ?? ""}`,
+    city:             e.venue?.city ?? "",
+    date:             e.startDate,
+    time:             new Date(e.startDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+    imageUrl:         e.coverImage || "https://images.unsplash.com/photo-1501386761578-eaa54b8f8a48?w=1200&q=80",
+    category:         e.category as MockEvent["category"],
+    featured:         e.isFeatured,
+    ticketsAvailable: (e.totalCapacity ?? 0) - (e.totalSold ?? 0),
+    organizer:        typeof e.organizer === "string" ? e.organizer : (e.organizer as { name?: string })?.name ?? "Organizer",
+  };
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // PAGE
 // ═════════════════════════════════════════════════════════════════════════════
 
 export default function HomePage() {
   const router = useRouter();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const [search, setSearch] = useState("");
+  const [featuredEvents, setFeaturedEvents] = useState<ApiEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
+  useEffect(() => {
+    eventApi.list({ featured: true, limit: 4 }).then((res) => {
+      if (res.success && res.data) {
+        setFeaturedEvents(res.data.events);
+      }
+      setEventsLoading(false);
+    });
+  }, []);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -127,6 +164,9 @@ export default function HomePage() {
       router.push("/explore");
     }
   }
+
+  const isOrganizer = user?.role === "organizer" || user?.role === "admin";
+  const isAttendee = user?.role === "attendee";
 
   return (
     <div className="bg-white text-[#1a2332]">
@@ -176,18 +216,54 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.22 }}
                 className="flex flex-col sm:flex-row items-center gap-4 mb-10"
               >
-                <Link
-                  href="/create-event"
-                  className="btn-green px-8 py-4 text-base font-bold rounded-lg inline-flex items-center gap-2"
-                >
-                  Create Event
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-white font-bold text-base underline underline-offset-4 decoration-2 hover:text-white/80 transition-colors"
-                >
-                  Explore Events
-                </Link>
+                {!authLoading && isAuthenticated ? (
+                  isOrganizer ? (
+                    <>
+                      <Link
+                        href="/dashboard"
+                        className="btn-green px-8 py-4 text-base font-bold rounded-lg inline-flex items-center gap-2"
+                      >
+                        Go to Dashboard
+                      </Link>
+                      <Link
+                        href="/create-event"
+                        className="text-white font-bold text-base underline underline-offset-4 decoration-2 hover:text-white/80 transition-colors"
+                      >
+                        Create New Event
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/explore"
+                        className="btn-green px-8 py-4 text-base font-bold rounded-lg inline-flex items-center gap-2"
+                      >
+                        Browse Events
+                      </Link>
+                      <Link
+                        href="/create-event"
+                        className="text-white font-bold text-base underline underline-offset-4 decoration-2 hover:text-white/80 transition-colors"
+                      >
+                        Join as Organizer
+                      </Link>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <Link
+                      href="/create-event"
+                      className="btn-green px-8 py-4 text-base font-bold rounded-lg inline-flex items-center gap-2"
+                    >
+                      Create Event
+                    </Link>
+                    <Link
+                      href="/explore"
+                      className="text-white font-bold text-base underline underline-offset-4 decoration-2 hover:text-white/80 transition-colors"
+                    >
+                      Explore Events
+                    </Link>
+                  </>
+                )}
               </motion.div>
 
               {/* Rating badges */}
@@ -280,6 +356,65 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          FEATURED EVENTS — Real data from API
+          ══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 bg-[#f8fafc]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <motion.p
+                initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="text-[#00d26a] font-bold text-sm uppercase tracking-wider mb-3"
+              >
+                Handpicked for you
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.06 }}
+                className="text-3xl sm:text-4xl font-extrabold text-[#1a2332]"
+              >
+                Featured Events
+              </motion.h2>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              transition={{ delay: 0.12 }}
+            >
+              <Link href="/explore" className="group flex items-center gap-2 text-[#1a2332] font-bold hover:text-[#00d26a] transition-colors">
+                View all events
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {eventsLoading ? (
+              <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              >
+                {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} index={i} />)}
+              </motion.div>
+            ) : featuredEvents.length > 0 ? (
+              <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              >
+                {featuredEvents.map((e, i) => (
+                  <EventCard key={e._id} event={toCardEvent(e)} index={i} />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="py-20 text-center rounded-3xl bg-white border border-gray-100"
+              >
+                <Calendar className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+                <p className="text-gray-400 font-medium">No featured events found at the moment.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
           PRICING — Lowest fees in the industry
           ══════════════════════════════════════════════════════════════════════ */}
       <section id="pricing" className="py-20 sm:py-28">
@@ -333,10 +468,10 @@ export default function HomePage() {
                   transition={{ delay: 0.24 }}
                 >
                   <Link
-                    href="/create-event"
+                    href={isAuthenticated && isOrganizer ? "/dashboard" : "/create-event"}
                     className="btn-green px-8 py-4 text-base font-bold rounded-lg inline-flex items-center gap-2"
                   >
-                    Create Event
+                    {isAuthenticated && isOrganizer ? "Manage My Events" : "Create Event"}
                   </Link>
                 </motion.div>
               </div>
@@ -472,15 +607,20 @@ export default function HomePage() {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  delay: i * 0.1,
+                  duration: 0.5
+                }}
               >
-                <p className="text-3xl sm:text-4xl font-extrabold text-[#00d26a] mb-1">
+                <p className="text-3xl sm:text-5xl font-extrabold text-[#00d26a] mb-2">
                   {stat.value}
                 </p>
-                <p className="text-white/60 text-sm">{stat.label}</p>
+                <p className="text-white/60 text-sm font-medium tracking-wide uppercase">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -575,10 +715,10 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/create-event"
+                href={isAuthenticated && isOrganizer ? "/dashboard" : "/create-event"}
                 className="btn-green px-10 py-4 text-base font-bold rounded-lg inline-flex items-center justify-center gap-2"
               >
-                Create Your First Event
+                {isAuthenticated && isOrganizer ? "Manage My Events" : "Create Your First Event"}
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link

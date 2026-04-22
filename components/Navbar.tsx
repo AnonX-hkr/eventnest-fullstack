@@ -183,6 +183,8 @@ export default function Navbar() {
   const countryRef = useRef<HTMLDivElement>(null);
 
   const { isAuthenticated, user, logout, isLoading } = useAuth();
+  const isOrganizer = user?.role === "organizer" || user?.role === "admin";
+  const isAttendee = user?.role === "attendee";
 
   useEffect(() => { setCurrencyState(getSavedCurrency()); }, []);
 
@@ -447,7 +449,7 @@ export default function Navbar() {
 
           {/* ── Create Event ──────────────────────────────────────────────── */}
           <Link
-            href="/create-event"
+            href={isAuthenticated && isOrganizer ? "/create-event" : "/create-event"}
             className="flex items-center gap-[5px] px-[14px] h-[34px] rounded-[5px] text-white text-[14px] font-semibold whitespace-nowrap transition-all duration-150"
             style={{
               background: "#00d26a",
@@ -458,7 +460,7 @@ export default function Navbar() {
           >
             <Calendar className="w-[14px] h-[14px]" />
             <Plus className="w-[11px] h-[11px] -ml-[3px]" />
-            Create Event
+            {isAuthenticated && isOrganizer ? "Create Event" : isAuthenticated && isAttendee ? "Become Organizer" : "Create Event"}
           </Link>
 
           {/* Divider */}

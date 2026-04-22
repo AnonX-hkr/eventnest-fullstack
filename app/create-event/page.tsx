@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText, Calendar, MapPin, Ticket, Image as ImageIcon,
   Send, ChevronRight, ChevronLeft, Plus, Trash2, Check,
-  Loader2, AlertCircle, Globe, ExternalLink,
+  Loader2, AlertCircle, Globe, ExternalLink, Building2,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { eventApi, TicketTier } from "@/lib/api";
@@ -86,7 +87,7 @@ const labelCls = "block text-white/55 text-xs font-medium mb-1.5";
 
 export default function CreateEventPage() {
   const router = useRouter();
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, user, isLoading } = useAuth();
 
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardData>(defaultData);
@@ -95,6 +96,17 @@ export default function CreateEventPage() {
   const [submitError, setSubmitError] = useState("");
   const [published, setPublished] = useState(false);
   const [createdEventId, setCreatedEventId] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login?redirect=/create-event");
+    } else if (!isLoading && isAuthenticated && user?.role === "attendee") {
+      // If attendee, maybe show a "Upgrade to Organizer" message instead of just redirecting
+      // For now, let's just show an error message in the render if they are an attendee
+    }
+  }, [isLoading, isAuthenticated, user, router]);
+
+  if (isLoading) return <div className="min-h-screen bg-[#0a1628] flex items-center justify-center"><Loader2 className="w-8 h-8 text-[#ff5a5f] animate-spin" /></div>;
 
   function set<K extends keyof WizardData>(field: K, value: WizardData[K]) {
     setData((d) => ({ ...d, [field]: value }));
@@ -244,6 +256,28 @@ export default function CreateEventPage() {
   }
 
   // ─── Render ────────────────────────────────────────────────────────────────
+  if (!isLoading && isAuthenticated && user?.role === "attendee") {
+    return (
+      <div className="min-h-screen bg-[#0a1628] flex flex-col items-center pt-32 px-4 text-center">
+        <div className="w-20 h-20 rounded-full bg-[#ff5a5f]/10 flex items-center justify-center mb-6">
+          <Building2 className="w-10 h-10 text-[#ff5a5f]" />
+        </div>
+        <h1 className="text-3xl font-extrabold text-white mb-3">Organizer Account Required</h1>
+        <p className="text-white/50 text-sm max-w-md mb-8">
+          You are currently logged in as an attendee. To create and manage events, you need an organizer account.
+        </p>
+        <div className="flex items-center gap-4">
+          <Link href="/explore" className="btn-scale px-6 py-3 rounded-xl border border-white/10 text-white font-semibold hover:bg-white/5">
+            Browse Events
+          </Link>
+          <Link href="/signup?role=organizer" className="btn-scale px-6 py-3 rounded-xl bg-[#ff5a5f] text-white font-bold hover:bg-[#ff3d42] shadow-[0_0_18px_rgba(255,90,95,0.3)]">
+            Create Organizer Account
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       {/* Page title */}
